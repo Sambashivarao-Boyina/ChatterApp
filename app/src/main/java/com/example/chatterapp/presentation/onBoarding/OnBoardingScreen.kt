@@ -1,6 +1,5 @@
 package com.example.chatterapp.presentation.onBoarding
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,7 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.chatterapp.presentation.onBoarding.components.OnBoardingButton
 import com.example.chatterapp.presentation.onBoarding.components.OnBoardingIndicator
 import com.example.chatterapp.presentation.onBoarding.components.OnBoardingPage
-import com.example.chatterapp.ui.theme.Purple
+import com.example.chatterapp.ui.theme.Blue
 import kotlinx.coroutines.launch
 
 @Composable
@@ -36,10 +35,10 @@ fun OnBoardingScreen(
             .background(
                 brush = Brush.linearGradient(
                     colors = listOf(
-                        Purple,
+                        Blue,
                         Color.Black,
                         Color.Black,
-                        Color.Black, Color.Black, Purple
+                        Color.Black, Color.Black, Blue
                     ),
                     start = Offset.Zero,
                     end = Offset.Infinite

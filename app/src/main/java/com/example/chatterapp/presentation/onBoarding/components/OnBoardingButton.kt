@@ -3,7 +3,6 @@ package com.example.chatterapp.presentation.onBoarding.components
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -15,7 +14,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.chatterapp.ui.theme.ChatterAppTheme
-import com.example.chatterapp.ui.theme.Purple
+import com.example.chatterapp.ui.theme.Blue
 
 @Composable
 fun OnBoardingButton(
@@ -26,7 +25,7 @@ fun OnBoardingButton(
     IconButton(
         onClick = onClick,
         colors = IconButtonDefaults.iconButtonColors().copy(
-            containerColor = Purple,
+            containerColor = Blue,
             disabledContainerColor = Color.DarkGray
         ),
         modifier = Modifier

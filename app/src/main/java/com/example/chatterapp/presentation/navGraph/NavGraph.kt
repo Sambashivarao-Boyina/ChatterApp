@@ -9,6 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import com.example.chatterapp.presentation.authetication.AuthNavigatorScreen
 import com.example.chatterapp.presentation.onBoarding.OnBoardingScreen
 import com.example.chatterapp.presentation.onBoarding.OnBoardingViewModel
 
@@ -26,6 +27,15 @@ fun NavGraph(
             composable(route = Route.OnBoardingScreen.route) {
                 val onBoardingViewModel: OnBoardingViewModel = hiltViewModel()
                 OnBoardingScreen(onEvent = onBoardingViewModel::onEvent)
+            }
+        }
+
+        navigation(
+            route = Route.AuthRoutes.route,
+            startDestination = Route.AuthNavigatorScreen.route
+        ) {
+            composable(route =  Route.AuthNavigatorScreen.route) {
+                AuthNavigatorScreen()
             }
         }
 

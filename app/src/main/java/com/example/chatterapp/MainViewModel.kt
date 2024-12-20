@@ -1,5 +1,6 @@
 package com.example.chatterapp
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -23,11 +24,15 @@ class MainViewModel @Inject constructor(
     var startDestination by mutableStateOf(Route.AppStartScreen.route)
 
     init {
-        localUserManager.readAppEntry().onEach { onBoardingState ->
-            if(onBoardingState) {
+        localUserManager.readUserEntryAndAuth().onEach { states ->
+            val onBoarding = states.first
+            val userAuth = states.second
+            if(onBoarding && userAuth) {
                 startDestination = Route.ChatApp.route
-            } else {
+            }else if(!onBoarding) {
                 startDestination = Route.AppStartScreen.route
+            } else{
+                startDestination = Route.AuthRoutes.route
             }
             delay(300)
             splashCondition = false

@@ -6,14 +6,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.pager.PagerState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.chatterapp.ui.theme.Purple
+import com.example.chatterapp.ui.theme.Blue
 
 @Composable
 fun OnBoardingIndicator(
@@ -27,7 +24,7 @@ fun OnBoardingIndicator(
                     .width(35.dp)
                     .height(3.dp)
                     .background(
-                        color = if (curPage == positon) Purple else Color.White
+                        color = if (curPage == positon) Blue else Color.White
                     )
             )
             Spacer(modifier = Modifier.width(10.dp))
