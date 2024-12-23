@@ -16,4 +16,6 @@ interface LocalUserManager {
     fun readUserToken(): Flow<String>
 
     fun readUserEntryAndAuth(): Flow<Pair<Boolean,Boolean>>
+
+    suspend fun logOutUser()
 }

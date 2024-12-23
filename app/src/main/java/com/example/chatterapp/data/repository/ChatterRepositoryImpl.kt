@@ -1,8 +1,13 @@
 package com.example.chatterapp.data.repository
 
+import androidx.core.app.Person
 import com.example.chatterapp.data.remote.ChatterApi
 import com.example.chatterapp.data.remote.Dto.LoginUser
 import com.example.chatterapp.data.remote.Dto.SignUpUser
+import com.example.chatterapp.data.remote.Dto.UpdateData
+import com.example.chatterapp.domain.model.Friend
+import com.example.chatterapp.domain.model.User
+import com.example.chatterapp.domain.model.UserDetails
 import com.example.chatterapp.domain.repository.ChatterRepository
 import com.example.chatterapp.presentation.authetication.components.AuthResponse
 import okhttp3.ResponseBody
@@ -18,4 +23,26 @@ class ChatterRepositoryImpl(
     override suspend fun signupUser(user: SignUpUser): Response<AuthResponse> {
         return chatterApi.signupUser(user)
     }
+
+    override suspend fun getFriendsList(): Response<List<Friend>> {
+        return chatterApi.getFriendList()
+    }
+
+    override suspend fun getAllUsers(): Response<List<User>> {
+        return chatterApi.getAllUser()
+    }
+
+    override suspend fun sendFriendRequest(id: String): Response<ResponseBody> {
+        return chatterApi.sendFriendRequest(id = id)
+    }
+
+    override suspend fun getSelfDetails(): Response<UserDetails> {
+        return chatterApi.getSelfDetails()
+    }
+
+    override suspend fun updateUserAbout(updateData: UpdateData): Response<ResponseBody> {
+        return chatterApi.updateUserAbout(data = updateData)
+    }
+
+
 }

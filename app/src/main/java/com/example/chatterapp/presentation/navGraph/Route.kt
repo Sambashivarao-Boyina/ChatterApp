@@ -11,5 +11,11 @@ sealed class Route(val route:String) {
     object SignupScreen: Route("signupScreen")
 
     object ChatApp: Route("chatApp")
-    object HomeScreen: Route("homescreen")
+    object ChatAppNavigator: Route("chatAppNavigatorScreen")
+
+    object HomeScreen: Route("homeScreen")
+    object UserProfile: Route("userProfileScreen")
+    object SearchFriend: Route("searchFriend")
+
+    object AboutScreen: Route("aboutScreen")
 }

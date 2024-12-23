@@ -10,6 +10,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import com.example.chatterapp.presentation.authetication.AuthNavigatorScreen
+import com.example.chatterapp.presentation.chatter.ChatterNavigator
 import com.example.chatterapp.presentation.onBoarding.OnBoardingScreen
 import com.example.chatterapp.presentation.onBoarding.OnBoardingViewModel
 
@@ -41,10 +42,10 @@ fun NavGraph(
 
         navigation(
             route = Route.ChatApp.route,
-            startDestination = Route.HomeScreen.route
+            startDestination = Route.ChatAppNavigator.route
         ) {
-            composable(route = Route.HomeScreen.route) {
-                Text(text = "Home Screen")
+            composable(route = Route.ChatAppNavigator.route) {
+                ChatterNavigator()
             }
         }
     }

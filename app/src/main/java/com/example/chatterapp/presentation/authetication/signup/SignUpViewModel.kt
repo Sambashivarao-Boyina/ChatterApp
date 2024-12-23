@@ -11,6 +11,7 @@ import com.example.chatterapp.data.remote.Dto.SignUpUser
 import com.example.chatterapp.domain.manager.LocalUserManager
 import com.example.chatterapp.domain.repository.ChatterRepository
 import com.example.chatterapp.presentation.authetication.components.AuthResponse
+import com.example.chatterapp.util.Constants.extractData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import okhttp3.ResponseBody
@@ -120,16 +121,6 @@ class SignUpViewModel @Inject constructor(
 
     }
 
-    // Helper function to extract token from the response body
-    private fun extractData(responseBody: ResponseBody?, element:String): String? {
-        responseBody?.let {
-            val responseJson = it.string()
-            // Parse the JSON and extract token
-            val jsonObject = JSONObject(responseJson)
-            return jsonObject.optString(element, null)
-        }
-        return null
-    }
 
     private fun validateDate(): Boolean {
         if(!isValidEmail(_state.value.email)) {

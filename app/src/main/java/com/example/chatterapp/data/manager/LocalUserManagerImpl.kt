@@ -62,6 +62,13 @@ class LocalUserManagerImpl(
         }
     }
 
+    override suspend fun logOutUser() {
+        context.datastore.edit { settings ->
+            settings.remove(PreferenceKeys.USER_AUTH)
+            settings.remove(PreferenceKeys.USER_TOKEN)
+        }
+    }
+
 }
 
 private val Context.datastore: DataStore<Preferences>  by preferencesDataStore(name = USER_SETTINGS)
