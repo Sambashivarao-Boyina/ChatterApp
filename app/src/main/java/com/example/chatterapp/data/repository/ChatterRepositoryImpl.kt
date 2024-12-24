@@ -6,6 +6,7 @@ import com.example.chatterapp.data.remote.Dto.LoginUser
 import com.example.chatterapp.data.remote.Dto.SignUpUser
 import com.example.chatterapp.data.remote.Dto.UpdateData
 import com.example.chatterapp.domain.model.Friend
+import com.example.chatterapp.domain.model.FriendRequest
 import com.example.chatterapp.domain.model.User
 import com.example.chatterapp.domain.model.UserDetails
 import com.example.chatterapp.domain.repository.ChatterRepository
@@ -42,6 +43,22 @@ class ChatterRepositoryImpl(
 
     override suspend fun updateUserAbout(updateData: UpdateData): Response<ResponseBody> {
         return chatterApi.updateUserAbout(data = updateData)
+    }
+
+    override suspend fun userSendedRequest(): Response<List<FriendRequest>> {
+        return chatterApi.userSendedRequest()
+    }
+
+    override suspend fun userReceivedRequest(): Response<List<FriendRequest>> {
+        return chatterApi.userReceivedRequest()
+    }
+
+    override suspend fun acceptRequest(id: String): Response<ResponseBody> {
+        return chatterApi.acceptRequest(id = id)
+    }
+
+    override suspend fun rejectRequest(id: String): Response<ResponseBody> {
+        return chatterApi.rejectRequest(id = id)
     }
 
 

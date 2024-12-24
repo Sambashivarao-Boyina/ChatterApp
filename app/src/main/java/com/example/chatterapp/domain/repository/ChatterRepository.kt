@@ -4,6 +4,7 @@ import com.example.chatterapp.data.remote.Dto.LoginUser
 import com.example.chatterapp.data.remote.Dto.SignUpUser
 import com.example.chatterapp.data.remote.Dto.UpdateData
 import com.example.chatterapp.domain.model.Friend
+import com.example.chatterapp.domain.model.FriendRequest
 import com.example.chatterapp.domain.model.User
 import com.example.chatterapp.domain.model.UserDetails
 import com.example.chatterapp.presentation.authetication.components.AuthResponse
@@ -29,4 +30,13 @@ interface ChatterRepository {
     suspend fun updateUserAbout(
         updateData: UpdateData
     ): Response<ResponseBody>
+
+    //user sended Request
+    suspend fun userSendedRequest(): Response<List<FriendRequest>>
+
+    //user received request
+    suspend fun userReceivedRequest(): Response<List<FriendRequest>>
+
+    suspend fun acceptRequest(id: String): Response<ResponseBody>
+    suspend fun rejectRequest(id: String): Response<ResponseBody>
 }

@@ -4,6 +4,7 @@ import com.example.chatterapp.data.remote.Dto.LoginUser
 import com.example.chatterapp.data.remote.Dto.SignUpUser
 import com.example.chatterapp.data.remote.Dto.UpdateData
 import com.example.chatterapp.domain.model.Friend
+import com.example.chatterapp.domain.model.FriendRequest
 import com.example.chatterapp.domain.model.User
 import com.example.chatterapp.domain.model.UserDetails
 import com.example.chatterapp.presentation.authetication.components.AuthResponse
@@ -47,4 +48,18 @@ interface ChatterApi {
     suspend fun updateUserAbout(
         @Body data:UpdateData
     ): Response<ResponseBody>
+
+    @GET("request/sended")
+    suspend fun userSendedRequest(): Response<List<FriendRequest>>
+
+    @GET("request/received")
+    suspend fun userReceivedRequest(): Response<List<FriendRequest>>
+
+    //Accept Request
+    @PATCH("request/accept/{id}")
+    suspend fun acceptRequest(@Path("id") id: String) : Response<ResponseBody>
+
+    //Reject Request
+    @PATCH("request/reject/{id}")
+    suspend fun rejectRequest(@Path("id") id: String) : Response<ResponseBody>
 }

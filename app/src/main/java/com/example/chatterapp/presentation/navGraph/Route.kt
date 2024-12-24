@@ -18,4 +18,7 @@ sealed class Route(val route:String) {
     object SearchFriend: Route("searchFriend")
 
     object AboutScreen: Route("aboutScreen")
+
+    object SendedRequest : Route("sendedRequests")
+    object ReceivedRequest: Route("receivedRequests")
 }

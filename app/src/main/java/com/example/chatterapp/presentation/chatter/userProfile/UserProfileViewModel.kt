@@ -75,12 +75,12 @@ class UserProfileViewModel @Inject constructor(
                 val response = chatterRepository.updateUserAbout(updateData = data)
 
                 if(response.isSuccessful) {
-                    val message = extractData(response.body(),"message")
-                    Log.d("sideEffect",message!!)
+                    sideEffect = extractData(response.body(),"message")
+
                     getUserDetails()
                 } else {
-                    val message = extractData(response.errorBody(),"message")
-                    Log.d("sideEffect",message!!)
+                    sideEffect = extractData(response.errorBody(),"message")
+
                 }
 
             } catch (e: HttpException) {

@@ -67,11 +67,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
 import com.example.chatterapp.R
 import com.example.chatterapp.domain.model.UserDetails
+import com.example.chatterapp.presentation.navGraph.Route
 import com.example.chatterapp.ui.theme.Blue
 import com.example.chatterapp.ui.theme.Gray
 import com.example.chatterapp.ui.theme.Purple
@@ -84,7 +86,8 @@ fun UserProfileScreen(
     isLoading: Boolean,
     refershData: () -> Unit,
     onEvent:(UserProfileEvent) -> Unit,
-    updateAboutValue: String
+    updateAboutValue: String,
+    navController : NavHostController
 ) {
     val pullToRefreshState = rememberPullToRefreshState()
     var logoutDialog by remember {
@@ -253,7 +256,9 @@ fun UserProfileScreen(
                                 modifier = Modifier.fillMaxWidth()
                             ) {
                                 TextButton(
-                                    onClick = {},
+                                    onClick = {
+                                        navController.navigate(Route.SendedRequest.route)
+                                    },
                                     modifier = Modifier.weight(0.45f),
                                     shape = RoundedCornerShape(10.dp),
                                     colors = ButtonDefaults.buttonColors().copy(
@@ -270,7 +275,7 @@ fun UserProfileScreen(
                                 Spacer(modifier = Modifier.weight(0.05f))
                                 TextButton(
                                     onClick = {
-
+                                        navController.navigate(Route.ReceivedRequest.route)
                                     },
                                     modifier = Modifier.weight(0.45f),
                                     shape = RoundedCornerShape(10.dp),
