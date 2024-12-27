@@ -32,13 +32,32 @@ class HomeViewModel @Inject constructor(
     private val _friends = mutableStateOf<List<Friend>>(emptyList())
     val friends: State<List<Friend>> = _friends
 
+    var searchValue by mutableStateOf("")
+        private set
+
     var sideEffect by mutableStateOf<String?>(null)
         private set
 
     var isLoading  by mutableStateOf(false)
         private set
+
+
     init {
         getFriends()
+    }
+
+    fun onEvent(event: HomeEvent) {
+        when(event) {
+            is HomeEvent.RemoveSideEffect -> {
+                sideEffect = null
+            }
+            is HomeEvent.UpdateSearchValue -> {
+                searchValue = event.value
+            }
+            HomeEvent.Search -> {
+                searchValue = ""
+            }
+        }
     }
 
     fun getFriends() {
@@ -56,8 +75,8 @@ class HomeViewModel @Inject constructor(
                     }
 
                 } else {
-                    val message = extractData(response.errorBody(),"message")
-                    Log.d("Errror",message!!)
+                    sideEffect = extractData(response.errorBody(),"message")
+
                 }
 
             } catch (e: HttpException) {
@@ -69,12 +88,18 @@ class HomeViewModel @Inject constructor(
             } catch (e: Exception) {
                 sideEffect = e.localizedMessage
             }
+            Log.d("error",sideEffect.toString())
             isLoading = false
 
         }
 
 
     }
+}
 
+sealed class HomeEvent {
+    object RemoveSideEffect: HomeEvent()
+    data class UpdateSearchValue(val value: String): HomeEvent()
 
+    object Search: HomeEvent()
 }

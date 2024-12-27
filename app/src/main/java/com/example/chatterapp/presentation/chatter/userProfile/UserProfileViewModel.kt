@@ -14,7 +14,11 @@ import com.example.chatterapp.domain.repository.ChatterRepository
 import com.example.chatterapp.util.Constants.extractData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import retrofit2.HttpException
+import java.io.File
 import java.io.IOException
 import java.net.SocketTimeoutException
 import javax.inject.Inject
@@ -62,13 +66,17 @@ class UserProfileViewModel @Inject constructor(
                     sideEffect = "User Logged Out"
                 }
             }
+
+            is UserProfileEvent.RemoveSideEffect -> {
+                sideEffect = null
+            }
         }
     }
 
     private suspend fun sendAbout() {
         if(_updateAboutValue.value.trim().isNotEmpty()) {
             try {
-                isLoading = true
+
 
                 val data = UpdateData(data = _updateAboutValue.value)
 
@@ -92,11 +100,12 @@ class UserProfileViewModel @Inject constructor(
             } catch (e: Exception) {
                 sideEffect = e.localizedMessage
             }
-            isLoading = false
+
         } else {
             sideEffect = "data is Empty please enter some thing"
         }
     }
+
 
     fun getUserDetails() {
         viewModelScope.launch {
@@ -107,7 +116,6 @@ class UserProfileViewModel @Inject constructor(
                 if(response.isSuccessful) {
                     val user: UserDetails = response.body()!!
                     userProfile = user
-                    Log.d("user",user.toString())
                 } else {
                     sideEffect = extractData(response.errorBody(),"message")
                 }
@@ -125,6 +133,35 @@ class UserProfileViewModel @Inject constructor(
         }
     }
 
+    fun uploadImage(file: File) {
+        viewModelScope.launch {
+            try {
+                val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
+                val body = MultipartBody.Part.createFormData("file",file.name, requestFile )
+
+                val  response = chatterRepository.updateUserProfile(body)
+
+                if(response.isSuccessful) {
+                     sideEffect = extractData(response.body(), "message")
+                    getUserDetails()
+                } else {
+                    sideEffect = extractData(response.errorBody(), "message")
+                }
+
+            }catch (e: HttpException) {
+                sideEffect = e.localizedMessage
+            } catch (e: IOException) {
+                sideEffect = e.localizedMessage
+            } catch (e: SocketTimeoutException) {
+                sideEffect = e.localizedMessage
+            } catch (e: Exception) {
+                sideEffect = e.localizedMessage
+            }
+        }
+    }
+
+
+
 }
 
 
@@ -134,4 +171,6 @@ sealed class UserProfileEvent {
     object UpdateAbout: UserProfileEvent()
 
     object LogOutUser: UserProfileEvent()
+
+    object RemoveSideEffect: UserProfileEvent()
 }

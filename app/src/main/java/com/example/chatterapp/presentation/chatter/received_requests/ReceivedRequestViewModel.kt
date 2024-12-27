@@ -48,6 +48,10 @@ class ReceivedRequestViewModel @Inject constructor(
                     rejectRequest(id = event.id)
                 }
             }
+
+            is ReceivedRequestEvent.RemoveSideEffect -> {
+                sideEffect = null
+            }
         }
     }
 
@@ -133,4 +137,5 @@ class ReceivedRequestViewModel @Inject constructor(
 sealed class ReceivedRequestEvent {
     data class AcceptRequest(val id: String): ReceivedRequestEvent()
     data class RejectRequest(val id: String): ReceivedRequestEvent()
+    object RemoveSideEffect : ReceivedRequestEvent()
 }

@@ -29,6 +29,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
@@ -40,7 +41,8 @@ import com.example.chatterapp.domain.model.User
 @Composable
 fun RequestBox(
     request: FriendRequest,
-    user: User
+    user: User,
+    onClick: ()->Unit
 ) {
     val color = if(request.status == "Pending") {
         Color.Yellow
@@ -70,12 +72,13 @@ fun RequestBox(
                     .padding(top = 10.dp, bottom = 0.dp, start = 10.dp, end = 10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                if(request.receiver.userProfile == null) {
+                if(user.userProfile == null) {
                     Image(
                         painter = painterResource(R.drawable.default_profile),
                         contentDescription = null,
                         modifier = Modifier.size(70.dp)
                             .clip(CircleShape)
+                            .clickable { onClick() }
                     )
                 } else {
                     AsyncImage(
@@ -87,6 +90,7 @@ fun RequestBox(
                             .build(),
                         contentDescription = null,
                         modifier = Modifier.size(70.dp)
+                            .clickable { onClick() }
                     )
                 }
 
@@ -98,7 +102,10 @@ fun RequestBox(
                         fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.titleLarge,
                         minLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.clickable {
+                            onClick()
+                        }
                     )
                     Spacer(modifier = Modifier.height(10.dp))
 

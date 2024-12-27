@@ -2,6 +2,7 @@ package com.example.chatterapp.presentation.chatter.received_requests
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,6 +19,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
@@ -26,7 +29,10 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -52,7 +58,9 @@ import coil.transform.CircleCropTransformation
 import com.example.chatterapp.R
 import com.example.chatterapp.domain.model.FriendRequest
 import com.example.chatterapp.presentation.chatter.components.RequestBox
-import com.example.chatterapp.presentation.chatter.components.TitleBar
+import com.example.chatterapp.presentation.chatter.components.TopBar
+import com.example.chatterapp.presentation.navGraph.Route
+import com.example.chatterapp.ui.theme.Black
 import com.example.chatterapp.ui.theme.Blue
 import com.example.chatterapp.ui.theme.Gray
 
@@ -64,29 +72,55 @@ fun ReceivedRequestScreen(
     navController: NavHostController,
     onEvent: (ReceivedRequestEvent) -> Unit
 ) {
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        TitleBar(navController = navController, "Received Requests")
-
-        LazyColumn(
-            modifier = Modifier.padding(horizontal = 15.dp)
-        ) {
-            items(requests) { request ->
-                Spacer(modifier = Modifier.height(10.dp))
-                if(request.status == "Pending") {
-                    ReceivedRequestBox(request = request, acceptRequest = {
-                        onEvent(ReceivedRequestEvent.AcceptRequest(request._id))
-                    }, rejectRequest = {
-                        onEvent(ReceivedRequestEvent.RejectRequest(request._id))
-                    })
-                } else {
-                    RequestBox(request = request, user = request.sender)
+    Scaffold(
+        topBar = {
+            TopBar(
+                title = "Received Request",
+                navigationBox = {
+                    IconButton(
+                        onClick = {
+                            navController.popBackStack()
+                        }
+                    ) {
+                        Icon(imageVector = Icons.AutoMirrored.Default.ArrowBack, contentDescription = null, modifier = Modifier.size(30.dp))
+                    }
                 }
-                Spacer(modifier = Modifier.height(10.dp))
+            )
+        },
+        containerColor = Black
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+                .padding(top = it.calculateTopPadding())
+        ) {
+
+
+            LazyColumn(
+                modifier = Modifier.padding(horizontal = 15.dp)
+            ) {
+                items(requests) { request ->
+                    Spacer(modifier = Modifier.height(10.dp))
+                    if (request.status == "Pending") {
+                        ReceivedRequestBox(request = request, acceptRequest = {
+                            onEvent(ReceivedRequestEvent.AcceptRequest(request._id))
+                        }, rejectRequest = {
+                            onEvent(ReceivedRequestEvent.RejectRequest(request._id))
+                        },
+                            onClick = {
+                                navController.navigate(Route.User.passUserId(request.sender._id))
+                            })
+                    } else {
+                        RequestBox(request = request, user = request.sender, onClick = {
+                            navController.navigate(Route.User.passUserId(request.sender._id))
+                        })
+                    }
+                    Spacer(modifier = Modifier.height(10.dp))
+                }
             }
         }
     }
+
+
 }
 
 
@@ -95,7 +129,8 @@ fun ReceivedRequestScreen(
 fun ReceivedRequestBox(
     acceptRequest: () -> Unit,
     rejectRequest: () -> Unit,
-    request: FriendRequest
+    request: FriendRequest,
+    onClick: () -> Unit
 ) {
 
     var acceptDialog by remember {
@@ -136,6 +171,9 @@ fun ReceivedRequestBox(
                         modifier = Modifier
                             .size(70.dp)
                             .clip(CircleShape)
+                            .clickable {
+                                onClick()
+                            }
                     )
                 } else {
                     AsyncImage(
@@ -147,6 +185,9 @@ fun ReceivedRequestBox(
                             .build(),
                         contentDescription = null,
                         modifier = Modifier.size(70.dp)
+                            .clickable {
+                                onClick()
+                            }
                     )
                 }
 
@@ -158,7 +199,10 @@ fun ReceivedRequestBox(
                         fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.titleLarge,
                         minLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.clickable {
+                            onClick()
+                        }
                     )
                     Spacer(modifier = Modifier.height(10.dp))
 

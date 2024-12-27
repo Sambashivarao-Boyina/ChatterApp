@@ -9,11 +9,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.chatterapp.domain.model.User
 import com.example.chatterapp.domain.repository.ChatterRepository
+import com.example.chatterapp.presentation.chatter.home.HomeEvent
 import com.example.chatterapp.util.Constants.extractData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import okhttp3.ResponseBody
-import org.json.JSONObject
 import retrofit2.HttpException
 import java.io.IOException
 import java.net.SocketTimeoutException
@@ -24,8 +23,11 @@ import javax.inject.Inject
 class AddFriendViewModel @Inject constructor(
     private val chatterRepository: ChatterRepository
 ): ViewModel() {
-    private val _users = mutableStateOf<List<User>>(emptyList())
-    val users:State<List<User>> = _users
+    var users by mutableStateOf<List<User>>(emptyList())
+        private set
+
+    var searchValue by mutableStateOf("")
+        private set
 
     var isLoading by mutableStateOf(false)
         private set
@@ -44,6 +46,21 @@ class AddFriendViewModel @Inject constructor(
                     sendFriendRequest(id = event.id)
                 }
             }
+            is AddFriendEvent.RemoveSideEffect -> {
+                sideEffect = null
+            }
+
+            is AddFriendEvent.UpdateSearchValue -> {
+                searchValue = event.value
+            }
+
+            AddFriendEvent.Search -> {
+                if(searchValue.trim().isEmpty()) {
+                    getUsers()
+                } else {
+                    searchUsers(searchValue)
+                }
+            }
         }
     }
 
@@ -54,12 +71,10 @@ class AddFriendViewModel @Inject constructor(
             val response = chatterRepository.sendFriendRequest(id =  id)
 
             if(response.isSuccessful) {
-                val message = extractData(response.body(),"message")
+                sideEffect = extractData(response.body(),"message")
                 getUsers()
-                Log.d("message",message!!)
             } else {
-                val errorMessage = extractData(response.errorBody(),"message")
-                Log.d("error",errorMessage!!)
+                sideEffect = extractData(response.errorBody(),"message")
             }
 
         }catch (e: HttpException) {
@@ -79,14 +94,14 @@ class AddFriendViewModel @Inject constructor(
 
 
         viewModelScope.launch {
-            Log.d("started","process started")
             isLoading = true
             try {
                 val response = chatterRepository.getAllUsers()
 
                 if(response.isSuccessful) {
                     if(response.body() != null) {
-                        _users.value = response.body()!!
+                        users = response.body() ?: emptyList()
+
                     } else {
                         sideEffect = "some went wrong"
                     }
@@ -105,11 +120,35 @@ class AddFriendViewModel @Inject constructor(
             } catch (e: Exception) {
                 sideEffect = e.localizedMessage
             }
-            Log.d("ended","process ended");
             isLoading = false
         }
 
 
+    }
+
+    private fun searchUsers(searchValue: String) {
+        viewModelScope.launch {
+
+
+            try {
+                val response =  chatterRepository.searchUsers(searchValue)
+                if(response.isSuccessful) {
+                    users = response.body() ?: emptyList()
+                } else {
+                    sideEffect = extractData(response.errorBody(), "message")
+                }
+            }catch (e: HttpException) {
+                sideEffect = e.localizedMessage
+            } catch (e: IOException) {
+                sideEffect = e.localizedMessage
+            } catch (e: SocketTimeoutException) {
+                sideEffect = e.localizedMessage
+            } catch (e: Exception) {
+                sideEffect = e.localizedMessage
+            }
+
+
+        }
     }
 
 
@@ -117,5 +156,10 @@ class AddFriendViewModel @Inject constructor(
 
 sealed class AddFriendEvent {
     data class SendRequest(val id: String): AddFriendEvent()
+    object RemoveSideEffect: AddFriendEvent()
+
+    data class UpdateSearchValue(val value: String): AddFriendEvent()
+
+    object Search: AddFriendEvent()
 }
 

@@ -1,12 +1,11 @@
-package com.example.chatterapp.presentation.chatter.sended_requests
+package com.example.chatterapp.presentation.chatter.user
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.chatterapp.domain.model.FriendRequest
+import com.example.chatterapp.domain.model.User
 import com.example.chatterapp.domain.repository.ChatterRepository
 import com.example.chatterapp.util.Constants.extractData
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,54 +13,32 @@ import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
 import java.net.SocketTimeoutException
-import java.text.SimpleDateFormat
-import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
-class SendedRequestViewModel @Inject constructor(
+class UserViewModel @Inject constructor(
     private val chatterRepository: ChatterRepository
-) : ViewModel() {
-
-    var sendedRequests by mutableStateOf<List<FriendRequest>>(emptyList())
-        private set
-
-    var isLoading by mutableStateOf(false)
+) :ViewModel() {
+    var user by mutableStateOf<User?>(null)
         private set
 
     var sideEffect by mutableStateOf<String?>(null)
         private set
 
-    init {
-        getSendedRequest()
-    }
-
-    fun onEvent(event: SendRequestEvent){
+    fun onEvent(event: UserEvent) {
         when(event) {
-            is SendRequestEvent.RemoveSideEffect -> {
+            is UserEvent.RemoveSideEffect -> {
                 sideEffect = null
             }
         }
     }
 
-    private fun getSendedRequest() {
+    fun getUser(id: String) {
         viewModelScope.launch {
-            isLoading = false
-
             try {
-                val response = chatterRepository.userSendedRequest()
+                val response = chatterRepository.getUserDetails(id)
                 if(response.isSuccessful) {
-                    val requests: List<FriendRequest> = response.body()!!
-                    val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
-
-                    // Sort by `createdAt` in descending order
-                    val sortedRequests = requests.sortedByDescending {
-                        dateFormat.parse(it.createdAt) // Parse the date string
-                    }
-
-                    sendedRequests = sortedRequests
-
-
+                    user = response.body()
                 } else {
                     sideEffect = extractData(response.errorBody(),"message")
                 }
@@ -74,12 +51,11 @@ class SendedRequestViewModel @Inject constructor(
             } catch (e: Exception) {
                 sideEffect = e.localizedMessage
             }
-
-            isLoading = false
         }
     }
+
 }
 
-sealed class SendRequestEvent {
-    object RemoveSideEffect: SendRequestEvent()
+sealed class UserEvent{
+    object RemoveSideEffect: UserEvent()
 }
