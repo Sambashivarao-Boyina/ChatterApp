@@ -59,5 +59,5 @@ interface ChatterRepository {
     suspend fun getFriendChat(id: String): Response<Chat>
 
     //send message
-    suspend fun sendMessage(id: String,sendedData: SendedData): Response<ResponseBody>
+    suspend fun sendMessage(id: String,sendedData: SendedData): Response<Chat>
 }

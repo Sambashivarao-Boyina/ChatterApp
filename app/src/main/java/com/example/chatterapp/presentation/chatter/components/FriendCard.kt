@@ -1,5 +1,6 @@
 package com.example.chatterapp.presentation.chatter.components
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -34,17 +35,15 @@ import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
 import com.example.chatterapp.R
 import com.example.chatterapp.domain.model.Friend
+import com.example.chatterapp.ui.theme.Blue
 import com.example.chatterapp.ui.theme.DarkGray
 
 @Composable
 fun FriendCard(
     friend: Friend,
-    onClick:()->Unit
+    onClick:()->Unit,
+    isOnline: Boolean
 ) {
-
-
-
-
     Row(
         modifier = Modifier.fillMaxWidth()
             .height(100.dp)
@@ -85,7 +84,7 @@ fun FriendCard(
                 style = MaterialTheme.typography.titleLarge,
                 minLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.width(300.dp)
+                modifier = Modifier.width(200.dp)
             )
             friend.lastMessage?.let {
                 Text(
@@ -96,6 +95,16 @@ fun FriendCard(
                     modifier = Modifier.width(200.dp)
                 )
             }
+
         }
+
+        if(isOnline) {
+            Text(
+                text = "online",
+                color = Blue
+            )
+        }
+
+
     }
 }

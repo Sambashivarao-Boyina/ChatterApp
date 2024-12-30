@@ -19,6 +19,7 @@ import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
@@ -45,86 +46,91 @@ import com.example.chatterapp.ui.theme.Blue
 fun HomeScreen(
     friends: List<Friend>,
     isRefershing: Boolean,
-    refreshData: ()->Unit,
+    refreshData: () -> Unit,
     searchValue: String,
     onEvent: (HomeEvent) -> Unit,
-    navController: NavHostController
+    navController: NavHostController,
+    activeUsers: State<List<String>>
 ) {
 
-   Scaffold(
-       topBar = {
-           TopBar(
-               title = "${stringResource(R.string.app_name)}"
-           )
-       },
-       containerColor = Black
-   ) {
-       val pullToRefreshState = rememberPullToRefreshState()
+    Scaffold(
+        topBar = {
+            TopBar(
+                title = "${stringResource(R.string.app_name)}"
+            )
+        },
+        containerColor = Black
+    ) {
+        val pullToRefreshState = rememberPullToRefreshState()
 
-       Box(
-           modifier = Modifier
-               .padding(top = it.calculateTopPadding())
-               .nestedScroll(pullToRefreshState.nestedScrollConnection)
-       ) {
-           LazyColumn(
-               modifier = Modifier.fillMaxSize()
-                   .padding(horizontal = 20.dp)
-           ) {
+        Box(
+            modifier = Modifier
+                .padding(it)
+                .nestedScroll(pullToRefreshState.nestedScrollConnection)
+        ) {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 20.dp)
+            ) {
 
-               item {
-                   SearchBox(
-                       value = searchValue,
-                       onChange = {
-                           onEvent(HomeEvent.UpdateSearchValue(it))
-                       },
-                       onSearch = {
-                           onEvent(HomeEvent.Search)
-                       }
-                   )
+                item {
+                    SearchBox(
+                        value = searchValue,
+                        onChange = {
+                            onEvent(HomeEvent.UpdateSearchValue(it))
+                        },
+                        onSearch = {
+                            onEvent(HomeEvent.Search)
+                        }
+                    )
 
-                   Spacer(modifier = Modifier.height(10.dp))
-               }
+                    Spacer(modifier = Modifier.height(10.dp))
+                }
 
-               if(friends.isEmpty()) {
-                   item {
-                       EmptyList()
-                   }
-               }
+                if (friends.isEmpty()) {
+                    item {
+                        EmptyList()
+                    }
+                }
 
-               items(friends) { friend ->
-                   FriendCard(friend = friend, onClick = {
-                       navController.navigate(Route.Chat.passChatId(friend._id))
-                   })
-                   Spacer(modifier = Modifier.height(10.dp))
-               }
-           }
+                items(friends) { friend ->
+                    FriendCard(
+                        friend = friend, onClick = {
+                            navController.navigate(Route.Chat.passChatId(friend._id))
+                        },
+                        isOnline = activeUsers.value.contains(friend.person._id)
+                    )
+                    Spacer(modifier = Modifier.height(10.dp))
+                }
+            }
 
-           if(pullToRefreshState.isRefreshing) {
-               LaunchedEffect(true) {
-                   refreshData()
-               }
-           }
+            if (pullToRefreshState.isRefreshing) {
+                LaunchedEffect(true) {
+                    refreshData()
+                }
+            }
 
-           LaunchedEffect(isRefershing) {
-               if(isRefershing) {
-                   pullToRefreshState.startRefresh()
-               } else {
-                   pullToRefreshState.endRefresh()
-               }
-           }
+            LaunchedEffect(isRefershing) {
+                if (isRefershing) {
+                    pullToRefreshState.startRefresh()
+                } else {
+                    pullToRefreshState.endRefresh()
+                }
+            }
 
-           PullToRefreshContainer(
-               state = pullToRefreshState,
-               modifier = Modifier.align(Alignment.TopCenter),
-               contentColor = Blue,
-               containerColor = if(pullToRefreshState.isRefreshing) {
-                   PullToRefreshDefaults.containerColor
-               } else {
-                   Color.Transparent
-               }
+            PullToRefreshContainer(
+                state = pullToRefreshState,
+                modifier = Modifier.align(Alignment.TopCenter),
+                contentColor = Blue,
+                containerColor = if (pullToRefreshState.isRefreshing) {
+                    PullToRefreshDefaults.containerColor
+                } else {
+                    Color.Transparent
+                }
 
-           )
-       }
-   }
+            )
+        }
+    }
 
 }

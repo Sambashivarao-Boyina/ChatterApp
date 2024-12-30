@@ -40,6 +40,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.chatterapp.R
 import com.example.chatterapp.presentation.navGraph.Route
+import com.example.chatterapp.ui.theme.Black
 import com.example.chatterapp.ui.theme.Blue
 import com.example.chatterapp.ui.theme.ChatterAppTheme
 import com.example.chatterapp.ui.theme.Gray
@@ -48,7 +49,8 @@ import com.example.chatterapp.ui.theme.Gray
 @Composable
 fun BottomNavition(
     navItems: List<BottomNavItem>,
-    navController: NavHostController
+    navController: NavHostController,
+    modifier: Modifier
 ) {
 
     val backStack = navController.currentBackStackEntryAsState().value
@@ -56,9 +58,10 @@ fun BottomNavition(
         backStack?.destination?.route
     }
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 20.dp),
+        modifier = modifier
+            .background(color = Black)
+            .padding(vertical = 5.dp)
+            .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
@@ -119,7 +122,8 @@ fun BottomNavigationPreview() {
     ChatterAppTheme {
         BottomNavition(
             navController = rememberNavController(),
-            navItems = listOf(BottomNavItem.Home, BottomNavItem.Chat, BottomNavItem.Settings)
+            navItems = listOf(BottomNavItem.Home, BottomNavItem.Chat, BottomNavItem.Settings),
+            modifier = Modifier
         )
     }
 }

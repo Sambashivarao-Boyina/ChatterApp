@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -13,6 +14,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -28,8 +30,17 @@ import com.example.chatterapp.ui.theme.Black
 import com.example.chatterapp.ui.theme.Blue
 
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun ChatterNavigator() {
+fun ChatterNavigator(
+    chatterNavigatorViewModel: ChatterNavigatorViewModel
+) {
+    DisposableEffect(Unit) {
+        onDispose {
+            chatterNavigatorViewModel.onCleared()
+        }
+
+    }
     val navController = rememberNavController()
     val backStackState = navController.currentBackStackEntryAsState().value
 
@@ -43,7 +54,8 @@ fun ChatterNavigator() {
             if(isBottomBarVisible) {
                 BottomNavition(
                     navItems = listOf(BottomNavItem.Home, BottomNavItem.Chat, BottomNavItem.Settings),
-                    navController = navController
+                    navController = navController,
+                    modifier = Modifier.navigationBarsPadding()
                 )
             }
         },
@@ -56,10 +68,10 @@ fun ChatterNavigator() {
                 .background(
                     color = Black
                 )
-                .padding(bottom = it.calculateBottomPadding())
+
 
         ) {
-            Spacer(modifier = Modifier.height(20.dp))
+
             ChatterGraph(
                 navController = navController
             )

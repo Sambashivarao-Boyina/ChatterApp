@@ -57,14 +57,14 @@ fun ChatTopBar(
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(
-                    bottom = 10.dp
+                    top = 10.dp
                 )
             ) {
                 if(friend.person.userProfile == null) {
                     Image(
                         painter = painterResource(R.drawable.default_profile),
                         contentDescription = null,
-                        modifier = Modifier.size(50.dp)
+                        modifier = Modifier.size(40.dp)
                             .clip(CircleShape)
                     )
                 } else {
@@ -76,7 +76,7 @@ fun ChatTopBar(
                             .transformations(CircleCropTransformation())
                             .build(),
                         contentDescription = null,
-                        modifier = Modifier.size(50.dp)
+                        modifier = Modifier.size(40.dp)
                     )
                 }
 
@@ -93,7 +93,7 @@ fun ChatTopBar(
             titleContentColor = Color.White,
             navigationIconContentColor = Color.White
         ),
-        modifier = Modifier.height(100.dp)
+        modifier = Modifier.height(90.dp)
     )
 
 }

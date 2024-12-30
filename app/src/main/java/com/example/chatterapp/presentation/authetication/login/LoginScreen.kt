@@ -1,5 +1,7 @@
 package com.example.chatterapp.presentation.authetication.login
 
+import android.annotation.SuppressLint
+import android.app.Activity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -12,11 +14,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -25,6 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.credentials.CredentialManager
 import androidx.navigation.NavController
 import com.example.chatterapp.R
 import com.example.chatterapp.presentation.authetication.components.AuthButton
@@ -35,6 +40,9 @@ import com.example.chatterapp.presentation.authetication.components.PasswordInpu
 import com.example.chatterapp.presentation.navGraph.Route
 import com.example.chatterapp.ui.theme.Blue
 
+
+
+@SuppressLint("RememberReturnType")
 @Composable
 fun LoginScreen(
     navController: NavController,

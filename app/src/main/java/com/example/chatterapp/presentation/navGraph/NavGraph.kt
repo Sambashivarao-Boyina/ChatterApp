@@ -11,6 +11,7 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import com.example.chatterapp.presentation.authetication.AuthNavigatorScreen
 import com.example.chatterapp.presentation.chatter.ChatterNavigator
+import com.example.chatterapp.presentation.chatter.ChatterNavigatorViewModel
 import com.example.chatterapp.presentation.onBoarding.OnBoardingScreen
 import com.example.chatterapp.presentation.onBoarding.OnBoardingViewModel
 
@@ -45,7 +46,10 @@ fun NavGraph(
             startDestination = Route.ChatAppNavigator.route
         ) {
             composable(route = Route.ChatAppNavigator.route) {
-                ChatterNavigator()
+                val chatterNavigatorViewModel: ChatterNavigatorViewModel = hiltViewModel()
+                ChatterNavigator(
+                    chatterNavigatorViewModel = chatterNavigatorViewModel
+                )
             }
         }
     }

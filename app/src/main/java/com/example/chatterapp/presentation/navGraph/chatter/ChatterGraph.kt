@@ -3,6 +3,7 @@ package com.example.chatterapp.presentation.navGraph.chatter
 import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -44,6 +45,7 @@ fun ChatterGraph(
         composable(route = Route.HomeScreen.route) {
             val homeViewModel: HomeViewModel = hiltViewModel()
             val friends = homeViewModel.friends.value
+            val activeUsers = homeViewModel.activeUsers.collectAsState()
 
             if (homeViewModel.sideEffect != null) {
                 Toast.makeText(
@@ -60,7 +62,8 @@ fun ChatterGraph(
                 refreshData = homeViewModel::getFriends,
                 searchValue = homeViewModel.searchValue,
                 onEvent = homeViewModel::onEvent,
-                navController = navController
+                navController = navController,
+                activeUsers = activeUsers
             )
         }
 

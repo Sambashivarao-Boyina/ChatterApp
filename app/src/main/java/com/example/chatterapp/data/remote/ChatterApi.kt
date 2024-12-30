@@ -92,6 +92,6 @@ interface ChatterApi {
     suspend fun getFriendChat(@Path("id") id: String): Response<Chat>
 
     @POST("friend/{id}/send")
-    suspend fun sendMessage(@Path("id") id: String,@Body sendedData: SendedData) : Response<ResponseBody>
+    suspend fun sendMessage(@Path("id") id: String,@Body sendedData: SendedData) : Response<Chat>
 
 }

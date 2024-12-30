@@ -11,6 +11,9 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import io.socket.client.IO
+import io.socket.client.Socket
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
@@ -27,16 +30,16 @@ class AppModule {
     @Singleton
     fun provideLocalUserManager(
         application: Application
-    ):LocalUserManager = LocalUserManagerImpl(application)
+    ): LocalUserManager = LocalUserManagerImpl(application)
 
     @Provides
     @Singleton
     fun provideChatterApi(
-        localUserManage : LocalUserManager
-    ):ChatterApi {
+        localUserManage: LocalUserManager
+    ): ChatterApi {
         val TIMEOUT = 30L // Timeout in seconds
 
-         val loggingInterceptor = HttpLoggingInterceptor().apply {
+        val loggingInterceptor = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY // Logs request and response
         }
 
@@ -53,7 +56,10 @@ class AppModule {
                 .addInterceptor { chain ->
                     val original = chain.request()
                     val requestBuilder = original.newBuilder()
-                        .header("Authorization", "Bearer ${token}") // Replace with dynamic JWT token
+                        .header(
+                            "Authorization",
+                            "Bearer ${token}"
+                        ) // Replace with dynamic JWT token
                         .header("Content-Type", "application/json")
                     val request = requestBuilder.build()
                     chain.proceed(request)
@@ -73,4 +79,19 @@ class AppModule {
     fun provideChatterRepository(
         chatterApi: ChatterApi
     ): ChatterRepository = ChatterRepositoryImpl(chatterApi = chatterApi)
+
+    @Provides
+    @Singleton
+    fun provideSocket(
+        localUserManage: LocalUserManager
+    ): Socket {
+        val options = IO.Options()
+        val token = runBlocking {
+            localUserManage.readUserToken().firstOrNull() ?: ""
+        }
+        options.query = "token=$token"
+        return IO.socket(Constants.SOCKET_URL, options) // Adjust IP address as needed
+    }
+
+
 }

@@ -83,7 +83,7 @@ class ChatterRepositoryImpl(
         return chatterApi.getFriendChat(id = id)
     }
 
-    override suspend fun sendMessage(id: String,sendedData: SendedData): Response<ResponseBody> {
+    override suspend fun sendMessage(id: String,sendedData: SendedData): Response<Chat> {
         return chatterApi.sendMessage(id = id,sendedData = sendedData)
     }
 

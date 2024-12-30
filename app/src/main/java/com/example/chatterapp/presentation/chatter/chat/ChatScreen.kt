@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -81,12 +83,13 @@ fun ChatScreen(
         ) {
             Column(
                 modifier = Modifier
-                    .padding(it)
+                    .padding(top = it.calculateTopPadding())
                     .fillMaxSize()
+                    .imePadding()
             ) {
                 LazyColumn(
                     state = listState,
-                    modifier = Modifier.weight(0.9f)
+                    modifier = Modifier.weight(1f)
                         .padding(10.dp)
                 ) {
                     chat?.let {
@@ -112,9 +115,8 @@ fun ChatScreen(
 
                 Row(
                     modifier = Modifier
-                        .weight(0.07f)
-                        .fillMaxWidth()
-                        .padding(horizontal = 10.dp)
+                        .navigationBarsPadding()
+                        .padding(horizontal = 10.dp, vertical = 7.dp)
                         .background(
                             color = Color.Transparent
                         ),

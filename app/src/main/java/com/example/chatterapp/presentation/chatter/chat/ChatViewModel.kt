@@ -13,6 +13,9 @@ import com.example.chatterapp.domain.repository.ChatterRepository
 import com.example.chatterapp.presentation.authetication.login.LoginScreen
 import com.example.chatterapp.util.Constants.extractData
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.socket.client.Socket
+import io.socket.emitter.Emitter
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
@@ -21,7 +24,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ChatViewModel @Inject constructor(
-    private val chatterRepository: ChatterRepository
+    private val chatterRepository: ChatterRepository,
+    private val socket: Socket
 ) : ViewModel() {
 
     var friendID by mutableStateOf<String?>(null)
@@ -42,6 +46,10 @@ class ChatViewModel @Inject constructor(
     var message by mutableStateOf("")
         private set
 
+    init {
+        setUpSocket()
+    }
+
     fun onEvent(event: ChatEvent) {
         when(event) {
             ChatEvent.RemoveSideEffect -> {
@@ -61,6 +69,18 @@ class ChatViewModel @Inject constructor(
     fun setFriendId(id: String) {
         friendID = id
         getFriend()
+    }
+
+    private fun setUpSocket() {
+        viewModelScope.launch(Dispatchers.IO) {
+            Log.d("message", "message received");
+            socket.on("message_received", onMessageListner)
+        }
+    }
+
+    private val onMessageListner = Emitter.Listener { args ->
+        Log.d("reload","reload data")
+        getChat()
     }
 
     fun getFriend() {
@@ -89,6 +109,37 @@ class ChatViewModel @Inject constructor(
 
     }
 
+    private fun sendMessage() {
+        viewModelScope.launch {
+            try {
+                val data = SendedData(
+                    message = message.trim()
+                )
+                val response = chatterRepository.sendMessage(
+                    id = friendID!!,
+                    sendedData = data
+                )
+                if(response.isSuccessful) {
+                    chat = response.body()
+                    message = ""
+
+                } else {
+                    sideEffect = extractData(response.errorBody(),"message")
+                }
+
+            }catch (e: HttpException) {
+                sideEffect = e.localizedMessage
+            } catch (e: IOException) {
+                sideEffect = e.localizedMessage
+            } catch (e: SocketTimeoutException) {
+                sideEffect = e.localizedMessage
+            } catch (e: Exception) {
+                sideEffect = e.localizedMessage
+            }
+        }
+    }
+
+
     private fun getChat() {
         friend?.let {
             viewModelScope.launch {
@@ -113,36 +164,6 @@ class ChatViewModel @Inject constructor(
             }
         }
     }
-
-    private fun sendMessage() {
-        viewModelScope.launch {
-            try {
-                val data = SendedData(
-                    message = message.trim()
-                )
-                val response = chatterRepository.sendMessage(
-                    id = friendID!!,
-                    sendedData = data
-                )
-                if(response.isSuccessful) {
-                    sideEffect = "Message Sent"
-                    message = ""
-                } else {
-                    sideEffect = extractData(response.errorBody(),"message")
-                }
-
-            }catch (e: HttpException) {
-                sideEffect = e.localizedMessage
-            } catch (e: IOException) {
-                sideEffect = e.localizedMessage
-            } catch (e: SocketTimeoutException) {
-                sideEffect = e.localizedMessage
-            } catch (e: Exception) {
-                sideEffect = e.localizedMessage
-            }
-        }
-    }
-
 
 }
 
