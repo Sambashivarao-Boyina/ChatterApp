@@ -30,7 +30,7 @@ class HomeViewModel @Inject constructor(
     private val socket: Socket
 ) : ViewModel() {
     private val _friends = mutableStateOf<List<Friend>>(emptyList())
-    val friends: State<List<Friend>> = _friends
+    var friends: State<List<Friend>> = _friends
 
     private val _activeUser = MutableStateFlow<List<String>>(emptyList())
     val activeUsers: StateFlow<List<String>> = _activeUser
@@ -78,15 +78,18 @@ class HomeViewModel @Inject constructor(
             }
 
             HomeEvent.Search -> {
-                searchValue = ""
+                searchValue = searchValue.trim()
+                if(searchValue == "") {
+                    getFriends()
+                } else {
+                    _friends.value = filterFriendsByUsername(searchValue, _friends.value)
+                }
             }
         }
     }
 
     fun getFriends() {
-
         viewModelScope.launch {
-
             try {
                 isLoading = true
                 val response = chatterRepository.getFriendsList()
@@ -117,6 +120,17 @@ class HomeViewModel @Inject constructor(
         }
 
 
+    }
+
+    private fun filterFriendsByUsername(searchValue: String, friends: List<Friend>): List<Friend> {
+        return friends.filter { friend ->
+            // Normalize the username and searchValue by removing spaces and ignoring case
+            val normalizedUsername = friend.person.username.replace(" ", "").lowercase()
+            val normalizedSearchValue = searchValue.replace(" ", "").lowercase()
+
+            // Check if the normalized username contains the normalized search value
+            normalizedUsername.contains(normalizedSearchValue)
+        }
     }
 
 }

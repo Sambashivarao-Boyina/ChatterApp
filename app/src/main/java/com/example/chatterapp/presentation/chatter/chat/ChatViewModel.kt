@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.chatterapp.data.remote.Dto.SendedData
 import com.example.chatterapp.domain.model.Chat
 import com.example.chatterapp.domain.model.Friend
@@ -16,8 +17,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import org.json.JSONArray
 import retrofit2.HttpException
+import java.io.Console
 import java.io.IOException
 import java.net.SocketTimeoutException
 import javax.inject.Inject
@@ -46,7 +51,11 @@ class ChatViewModel @Inject constructor(
     var message by mutableStateOf("")
         private set
 
+    private val _activeUser = MutableStateFlow<List<String>>(emptyList())
+    val activeUsers: StateFlow<List<String>> = _activeUser
+
     init {
+        getActiveUser()
         setUpSocket()
     }
 
@@ -63,6 +72,15 @@ class ChatViewModel @Inject constructor(
                     sendMessage()
                 }
             }
+            ChatEvent.BlockFriend -> {
+                blockFriend()
+            }
+            ChatEvent.UnBlockFriend -> {
+                unblockFriend()
+            }
+            ChatEvent.RefershData ->{
+                getChat()
+            }
         }
     }
 
@@ -71,17 +89,49 @@ class ChatViewModel @Inject constructor(
         getFriend()
     }
 
+
+
     private fun setUpSocket() {
-        viewModelScope.launch(Dispatchers.IO) {
-            Log.d("message", "message received");
-            socket.on("message_received", onMessageListner)
+        // Check if the socket is connected, or wait for the connection event
+        if (socket.connected()) {
+            addSocketListeners()
+        } else {
+            socket.on(Socket.EVENT_CONNECT) {
+                addSocketListeners()
+            }
         }
     }
 
+    private fun addSocketListeners() {
+        try {
+            socket.on("message_received", onMessageListner)
+            socket.on("user_list", onUserListReceived)
+            socket.on("chat_updated", onChatUpdated)
+        } catch (e: Exception) {
+            Log.d("error", "Error setting up socket listeners: ${e.localizedMessage}")
+        }
+    }
+
+
     private val onMessageListner = Emitter.Listener { args ->
-        Log.d("reload","reload data")
         getChat()
     }
+
+    private val onChatUpdated = Emitter.Listener { args ->
+        getChat()
+    }
+
+    private val onUserListReceived = Emitter.Listener { args ->
+        if(args.isNotEmpty()) {
+            val jsonArray = args[0] as JSONArray
+            val usersList = mutableListOf<String>()
+            for(i in 0 until jsonArray.length()){
+                usersList.add(jsonArray.getString(i))
+            }
+            _activeUser.value = usersList
+        }
+    }
+
 
     fun getFriend() {
         if(friendID != null) {
@@ -147,7 +197,6 @@ class ChatViewModel @Inject constructor(
                     val response = chatterRepository.getFriendChat(friend!!.chat)
                     if(response.isSuccessful) {
                         chat = response.body()
-                        Log.d("chat",chat.toString())
                     } else {
                         sideEffect = extractData(response.errorBody(),"message")
                     }
@@ -165,10 +214,96 @@ class ChatViewModel @Inject constructor(
         }
     }
 
+    private fun getActiveUser() {
+        viewModelScope.launch {
+            try {
+                val response = chatterRepository.getActiveUser()
+                if(response != null){
+                    Log.d("respoene",response.toString())
+                }
+                if(response.isSuccessful) {
+                    _activeUser.value = response.body() ?: emptyList<String>()
+                }
+
+            }catch (e: HttpException) {
+                sideEffect = e.localizedMessage
+            } catch (e: IOException) {
+                sideEffect = e.localizedMessage
+            } catch (e: SocketTimeoutException) {
+                sideEffect = e.localizedMessage
+            } catch (e: Exception) {
+                sideEffect = e.localizedMessage
+            }
+
+        }
+    }
+
+    private fun blockFriend() {
+        viewModelScope.launch {
+           friendID?.let {
+               try {
+                   val response = chatterRepository.blockFriend(friendID!!)
+
+                   if(response.isSuccessful) {
+                       chat = response.body()
+
+                   } else{
+                       sideEffect = extractData(response.errorBody(),"message")
+                   }
+
+               }catch (e: HttpException) {
+                   sideEffect = e.localizedMessage
+               } catch (e: IOException) {
+                   sideEffect = e.localizedMessage
+               } catch (e: SocketTimeoutException) {
+                   sideEffect = e.localizedMessage
+               } catch (e: Exception) {
+                   sideEffect = e.localizedMessage
+               }
+           }
+        }
+    }
+
+    private fun unblockFriend() {
+        viewModelScope.launch {
+            friendID?.let {
+                try {
+                    val response = chatterRepository.unBlockFriend( friendID!!)
+                    if(response.isSuccessful) {
+                        chat = response.body()
+                    } else{
+                        sideEffect = extractData(response.errorBody(),"message")
+                    }
+
+                }catch (e: HttpException) {
+                    sideEffect = e.localizedMessage
+                } catch (e: IOException) {
+                    sideEffect = e.localizedMessage
+                } catch (e: SocketTimeoutException) {
+                    sideEffect = e.localizedMessage
+                } catch (e: Exception) {
+                    sideEffect = e.localizedMessage
+                }
+            }
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        viewModelScope.launch(Dispatchers.IO) {
+            socket.off("message_received", onMessageListner)
+            socket.off("user_list", onUserListReceived)
+        }
+    }
+
+
 }
 
 sealed class ChatEvent{
     object RemoveSideEffect: ChatEvent()
     data class UpDateMessage(val message: String) : ChatEvent()
     object SendMessage: ChatEvent()
+    object BlockFriend: ChatEvent()
+    object UnBlockFriend: ChatEvent()
+    object  RefershData: ChatEvent()
 }

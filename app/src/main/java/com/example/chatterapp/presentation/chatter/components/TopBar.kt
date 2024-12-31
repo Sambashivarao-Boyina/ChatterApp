@@ -37,8 +37,8 @@ fun TopBar(
             titleContentColor = Gray,
             navigationIconContentColor = Gray
         ),
-        modifier = Modifier.height(90.dp)
-            .padding(top = 10.dp)
+        modifier = Modifier.height(100.dp)
+            .padding(bottom = 10.dp)
     )
 
 }

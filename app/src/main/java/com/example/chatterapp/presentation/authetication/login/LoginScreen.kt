@@ -2,6 +2,11 @@ package com.example.chatterapp.presentation.authetication.login
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
+import android.util.Log
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -29,7 +34,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.credentials.CredentialManager
 import androidx.navigation.NavController
 import com.example.chatterapp.R
 import com.example.chatterapp.presentation.authetication.components.AuthButton
@@ -42,14 +46,17 @@ import com.example.chatterapp.ui.theme.Blue
 
 
 
-@SuppressLint("RememberReturnType")
+
+
 @Composable
 fun LoginScreen(
     navController: NavController,
-    state:LoginState,
+    state: LoginState,
     onEvent: (LoginEvent) -> Unit,
     isLoading: Boolean
 ) {
+
+
 
 
     val annotatedString = buildAnnotatedString {
@@ -112,7 +119,7 @@ fun LoginScreen(
         PasswordInput(
             value = state.password,
             placeholder = "Enter the Password",
-            onChange= {
+            onChange = {
                 onEvent(LoginEvent.PasswordUpdate(it))
             },
             isError = state.isPasswordError
@@ -130,7 +137,8 @@ fun LoginScreen(
 
         Divider()
 
-        GoogleButton {  }
+        GoogleButton {
+        }
 
         TextButton(
             onClick = {

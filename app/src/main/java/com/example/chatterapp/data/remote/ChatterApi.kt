@@ -94,4 +94,14 @@ interface ChatterApi {
     @POST("friend/{id}/send")
     suspend fun sendMessage(@Path("id") id: String,@Body sendedData: SendedData) : Response<Chat>
 
+    @GET("user/activeUsers")
+    suspend fun getActiveUsers(): Response<List<String>>
+
+    //block user
+    @PATCH("friend/{id}/block")
+    suspend fun blockFriend(@Path("id") id: String): Response<Chat>
+
+    //unblock user
+    @PATCH("friend/{id}/unblock")
+    suspend fun unBlockFriend(@Path("id") id: String): Response<Chat>
 }

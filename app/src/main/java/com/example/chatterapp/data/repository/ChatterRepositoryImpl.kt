@@ -87,5 +87,16 @@ class ChatterRepositoryImpl(
         return chatterApi.sendMessage(id = id,sendedData = sendedData)
     }
 
+    override suspend fun getActiveUser(): Response<List<String>> {
+        return chatterApi.getActiveUsers()
+    }
+
+    override suspend fun blockFriend(id: String): Response<Chat> {
+        return chatterApi.blockFriend(id)
+    }
+
+    override suspend fun unBlockFriend(id: String): Response<Chat> {
+        return chatterApi.unBlockFriend(id)
+    }
 
 }

@@ -182,6 +182,7 @@ fun ChatterGraph(
         ) { backStackEntry ->
             val friendId = backStackEntry.arguments?.getString(FRIEND_ID) ?: return@composable
             val chatViewModel: ChatViewModel = hiltViewModel()
+            val activeUser = chatViewModel.activeUsers.collectAsState()
 
             if (chatViewModel.sideEffect != null) {
                 Toast.makeText(
@@ -201,7 +202,8 @@ fun ChatterGraph(
                 message = chatViewModel.message,
                 navController = navController,
                 onEvent = chatViewModel::onEvent,
-                chat = chatViewModel.chat
+                chat = chatViewModel.chat,
+                activeUsers = activeUser
             )
 
 

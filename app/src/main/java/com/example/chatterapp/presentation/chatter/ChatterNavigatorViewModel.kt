@@ -13,7 +13,7 @@ class ChatterNavigatorViewModel @Inject constructor(
     private val socket: Socket
 ) : ViewModel() {
     init {
-        socket.connect()
+        connectSocket()
     }
     private fun connectSocket() {
         viewModelScope.launch(Dispatchers.IO) {

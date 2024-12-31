@@ -60,4 +60,10 @@ interface ChatterRepository {
 
     //send message
     suspend fun sendMessage(id: String,sendedData: SendedData): Response<Chat>
+
+    suspend fun getActiveUser(): Response<List<String>>
+
+    suspend fun blockFriend(id: String): Response<Chat>
+
+    suspend fun unBlockFriend(id: String): Response<Chat>
 }
