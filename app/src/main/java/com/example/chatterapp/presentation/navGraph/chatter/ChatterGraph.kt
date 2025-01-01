@@ -112,7 +112,8 @@ fun ChatterGraph(
                 onEvent = userProfileViewModel::onEvent,
                 updateAboutValue = userProfileViewModel.updateAboutValue.value,
                 navController = navController,
-                uploadImage = userProfileViewModel::uploadImage
+                uploadImage = userProfileViewModel::uploadImage,
+                isUploading = userProfileViewModel.isUploading
             )
         }
 
@@ -203,7 +204,9 @@ fun ChatterGraph(
                 navController = navController,
                 onEvent = chatViewModel::onEvent,
                 chat = chatViewModel.chat,
-                activeUsers = activeUser
+                activeUsers = activeUser,
+                sendImage = chatViewModel::sendImage,
+                imageUploading = chatViewModel.isLoading
             )
 
 

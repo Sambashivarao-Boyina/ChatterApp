@@ -20,9 +20,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import org.json.JSONArray
 import retrofit2.HttpException
 import java.io.Console
+import java.io.File
 import java.io.IOException
 import java.net.SocketTimeoutException
 import javax.inject.Inject
@@ -47,6 +51,8 @@ class ChatViewModel @Inject constructor(
 
     var isLoading by mutableStateOf(false)
         private set
+
+
 
     var message by mutableStateOf("")
         private set
@@ -285,6 +291,37 @@ class ChatViewModel @Inject constructor(
                     sideEffect = e.localizedMessage
                 }
             }
+        }
+    }
+
+     fun sendImage(file: File) {
+        viewModelScope.launch {
+            isLoading = true
+            try {
+                Log.d("file",file.name)
+                val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
+                val body = MultipartBody.Part.createFormData("file",file.name, requestFile )
+
+                val response = chatterRepository.sendImageMessage(file = body,id = friendID!!)
+                if(response.isSuccessful) {
+                    chat = response.body()
+                    sideEffect = "Image is sent"
+                } else {
+                    sideEffect = extractData(response.errorBody(), "message")
+                    Log.d("error",sideEffect.toString())
+                }
+
+            }catch (e: HttpException) {
+                sideEffect = e.localizedMessage
+            } catch (e: IOException) {
+                sideEffect = e.localizedMessage
+            } catch (e: SocketTimeoutException) {
+                sideEffect = e.localizedMessage
+            } catch (e: Exception) {
+                sideEffect = e.localizedMessage
+            }
+
+            isLoading = false
         }
     }
 

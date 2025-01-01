@@ -94,6 +94,11 @@ interface ChatterApi {
     @POST("friend/{id}/send")
     suspend fun sendMessage(@Path("id") id: String,@Body sendedData: SendedData) : Response<Chat>
 
+    @Multipart
+    @POST("friend/{id}/sendImage")
+    suspend fun sendImageMessage(@Part file: MultipartBody.Part, @Path("id") id: String): Response<Chat>
+
+
     @GET("user/activeUsers")
     suspend fun getActiveUsers(): Response<List<String>>
 

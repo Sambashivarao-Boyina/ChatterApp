@@ -61,6 +61,9 @@ interface ChatterRepository {
     //send message
     suspend fun sendMessage(id: String,sendedData: SendedData): Response<Chat>
 
+    //send image message
+    suspend fun sendImageMessage(file: MultipartBody.Part, id:String): Response<Chat>
+
     suspend fun getActiveUser(): Response<List<String>>
 
     suspend fun blockFriend(id: String): Response<Chat>

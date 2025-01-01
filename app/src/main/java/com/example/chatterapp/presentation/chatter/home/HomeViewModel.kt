@@ -52,7 +52,11 @@ class HomeViewModel @Inject constructor(
 
     private fun setupSocket() {
         viewModelScope.launch(Dispatchers.IO) {
-            socket.on("user_list", onUserListReceived)
+            try {
+                socket.on("user_list", onUserListReceived)
+            }catch (e:Exception) {
+                Log.d("error","error")
+            }
         }
     }
 

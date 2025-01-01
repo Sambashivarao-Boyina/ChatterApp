@@ -1,10 +1,12 @@
 package com.example.chatterapp.presentation.chatter.chat.components
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Card
@@ -16,10 +18,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.min
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import coil.transform.CircleCropTransformation
+import com.example.chatterapp.R
 import com.example.chatterapp.domain.model.Message
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
@@ -42,11 +49,25 @@ fun MessageBox(
                 )
                 .padding(15.dp)
         ) {
-            Text(
-                text = message.message,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold
-            )
+
+            if(message.imageUrl != null) {
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(message.imageUrl)
+                        .placeholder(R.drawable.default_profile)
+                        .error(R.drawable.imageloadingerror)
+                        .build(),
+                    contentDescription = null,
+                    modifier = Modifier.size(300.dp)
+                )
+            } else {
+                Text(
+                    text = message.message,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+
             Text(
                 text = parseDate(message.createdAt),
                 style = MaterialTheme.typography.labelSmall

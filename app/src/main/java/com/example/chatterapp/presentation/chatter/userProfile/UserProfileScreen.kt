@@ -33,6 +33,7 @@ import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -77,6 +78,7 @@ import com.example.chatterapp.R
 import com.example.chatterapp.domain.model.UserDetails
 import com.example.chatterapp.presentation.chatter.components.EmptyList
 import com.example.chatterapp.presentation.chatter.components.TopBar
+import com.example.chatterapp.presentation.chatter.components.UploadingIndicator
 import com.example.chatterapp.presentation.navGraph.Route
 import com.example.chatterapp.ui.theme.Black
 import com.example.chatterapp.ui.theme.Blue
@@ -92,7 +94,8 @@ fun UserProfileScreen(
     onEvent:(UserProfileEvent) -> Unit,
     updateAboutValue: String,
     navController : NavHostController,
-    uploadImage:(File)->Unit
+    uploadImage:(File)->Unit,
+    isUploading: Boolean
 ) {
 
     val context = LocalContext.current
@@ -597,6 +600,10 @@ fun UserProfileScreen(
             }
 
 
+        }
+
+        if(isUploading) {
+            UploadingIndicator()
         }
     }
 

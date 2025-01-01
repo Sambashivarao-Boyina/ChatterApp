@@ -87,6 +87,10 @@ class ChatterRepositoryImpl(
         return chatterApi.sendMessage(id = id,sendedData = sendedData)
     }
 
+    override suspend fun sendImageMessage(file: MultipartBody.Part, id: String): Response<Chat> {
+        return chatterApi.sendImageMessage(file = file, id = id)
+    }
+
     override suspend fun getActiveUser(): Response<List<String>> {
         return chatterApi.getActiveUsers()
     }

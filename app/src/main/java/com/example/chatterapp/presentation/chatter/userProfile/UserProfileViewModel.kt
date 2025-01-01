@@ -35,6 +35,9 @@ class UserProfileViewModel @Inject constructor(
     var isLoading by mutableStateOf(false)
         private set
 
+    var isUploading by mutableStateOf(false)
+        private set
+
     var sideEffect by mutableStateOf<String?>(null)
         private set
 
@@ -135,6 +138,7 @@ class UserProfileViewModel @Inject constructor(
 
     fun uploadImage(file: File) {
         viewModelScope.launch {
+            isUploading = true
             try {
                 val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
                 val body = MultipartBody.Part.createFormData("file",file.name, requestFile )
@@ -157,6 +161,8 @@ class UserProfileViewModel @Inject constructor(
             } catch (e: Exception) {
                 sideEffect = e.localizedMessage
             }
+
+            isUploading = false
         }
     }
 

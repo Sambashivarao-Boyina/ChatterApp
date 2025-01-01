@@ -5,5 +5,6 @@ data class Message(
     val _id: String,
     val createdAt: String,
     val message: String,
-    val sender: String
+    val sender: String,
+    val imageUrl: String? = null,
 )
