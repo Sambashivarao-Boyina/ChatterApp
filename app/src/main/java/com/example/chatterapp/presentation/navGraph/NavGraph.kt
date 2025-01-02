@@ -1,10 +1,8 @@
 package com.example.chatterapp.presentation.navGraph
 
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavGraph
-import androidx.navigation.NavHost
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
@@ -20,6 +18,17 @@ fun NavGraph(
     startDestination:String
 ) {
     val navController = rememberNavController()
+
+    // Handling the navigation based on login state
+    LaunchedEffect(startDestination) {
+        navController.navigate(startDestination) {
+            // Pop the entire back stack to ensure no previous screens are retained
+            popUpTo(0) {
+                inclusive = true // Ensures the current screen is included in the pop-up
+            }
+            launchSingleTop = true // Prevents multiple instances of the same screen
+        }
+    }
 
     NavHost(navController = navController, startDestination = startDestination) {
         navigation(
@@ -53,4 +62,8 @@ fun NavGraph(
             }
         }
     }
+
+
+
+
 }

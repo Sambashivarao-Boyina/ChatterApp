@@ -179,6 +179,7 @@ fun ChatScreen(
                                 MessageBox(
                                     message = message,
                                     backGroundColor = if (message.sender.equals(friend.person._id)) LightGray else Blue,
+                                    navController = navController
                                 )
                                 if (message.sender.equals(friend.person._id)) {
                                     Spacer(Modifier.weight(1f))

@@ -1,5 +1,6 @@
 package com.example.chatterapp.presentation.navGraph.chatter
 
+import android.net.Uri
 import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -20,6 +21,7 @@ import com.example.chatterapp.presentation.chatter.chat.ChatViewModel
 import com.example.chatterapp.presentation.chatter.home.HomeEvent
 import com.example.chatterapp.presentation.chatter.home.HomeScreen
 import com.example.chatterapp.presentation.chatter.home.HomeViewModel
+import com.example.chatterapp.presentation.chatter.imageViewer.ImageViewer
 import com.example.chatterapp.presentation.chatter.received_requests.ReceivedRequestEvent
 import com.example.chatterapp.presentation.chatter.received_requests.ReceivedRequestScreen
 import com.example.chatterapp.presentation.chatter.received_requests.ReceivedRequestViewModel
@@ -34,12 +36,14 @@ import com.example.chatterapp.presentation.chatter.userProfile.UserProfileScreen
 import com.example.chatterapp.presentation.chatter.userProfile.UserProfileViewModel
 import com.example.chatterapp.presentation.navGraph.Route
 import com.example.chatterapp.util.Constants.FRIEND_ID
+import com.example.chatterapp.util.Constants.IMAGE_URL
 import com.example.chatterapp.util.Constants.USER_ID
 
 @Composable
 fun ChatterGraph(
     navController: NavHostController
 ) {
+
 
     NavHost(navController = navController, startDestination = Route.HomeScreen.route) {
         composable(route = Route.HomeScreen.route) {
@@ -209,6 +213,19 @@ fun ChatterGraph(
                 imageUploading = chatViewModel.isLoading
             )
 
+
+        }
+
+        composable(
+            route = Route.ImageViewer.route,
+            arguments = listOf(navArgument(IMAGE_URL) {type = NavType.StringType})
+        ){ backStackEntry ->
+            val imageUrl = Uri.decode(backStackEntry.arguments?.getString(IMAGE_URL) ?: return@composable)
+
+            ImageViewer(
+                imageUrl = imageUrl,
+                navController = navController
+            )
 
         }
     }

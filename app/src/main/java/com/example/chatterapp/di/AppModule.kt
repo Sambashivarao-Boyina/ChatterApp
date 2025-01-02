@@ -43,9 +43,7 @@ class AppModule {
             level = HttpLoggingInterceptor.Level.BODY // Logs request and response
         }
 
-        val token = runBlocking {
-            localUserManage.readUserToken().firstOrNull() ?: ""
-        }
+
 
         val okHttpClient: OkHttpClient by lazy {
             OkHttpClient.Builder()
@@ -54,6 +52,9 @@ class AppModule {
                 .writeTimeout(TIMEOUT, TimeUnit.SECONDS)   // Write timeout
                 .addInterceptor(loggingInterceptor)        // Add logging
                 .addInterceptor { chain ->
+                    val token = runBlocking {
+                        localUserManage.readUserToken().firstOrNull() ?: ""
+                    }
                     val original = chain.request()
                     val requestBuilder = original.newBuilder()
                         .header(

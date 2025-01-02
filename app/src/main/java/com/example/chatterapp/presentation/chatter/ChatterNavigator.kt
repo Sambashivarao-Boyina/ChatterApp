@@ -15,6 +15,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -39,8 +40,9 @@ fun ChatterNavigator(
         onDispose {
             chatterNavigatorViewModel.onCleared()
         }
-
     }
+
+
     val navController = rememberNavController()
     val backStackState = navController.currentBackStackEntryAsState().value
 
@@ -49,6 +51,7 @@ fun ChatterNavigator(
                 backStackState?.destination?.route == Route.SearchFriend.route ||
                 backStackState?.destination?.route == Route.UserProfile.route
     }
+
     Scaffold(
         bottomBar = {
             if(isBottomBarVisible) {

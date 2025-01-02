@@ -1,6 +1,8 @@
 package com.example.chatterapp.presentation.navGraph
 
+import android.net.Uri
 import com.example.chatterapp.util.Constants.FRIEND_ID
+import com.example.chatterapp.util.Constants.IMAGE_URL
 import com.example.chatterapp.util.Constants.USER_ID
 
 sealed class Route(val route:String) {
@@ -34,6 +36,12 @@ sealed class Route(val route:String) {
     object Chat:Route("chatScreen/{${FRIEND_ID}}") {
         fun passChatId(id: String): String {
             return this.route.replace(oldValue = "{${FRIEND_ID}}", newValue = id)
+        }
+    }
+
+    object ImageViewer: Route("imageViewer/{${IMAGE_URL}}") {
+        fun passImageUrl(url: String) : String {
+            return this.route.replace(oldValue = "{${IMAGE_URL}}", newValue = Uri.encode(url))
         }
     }
 

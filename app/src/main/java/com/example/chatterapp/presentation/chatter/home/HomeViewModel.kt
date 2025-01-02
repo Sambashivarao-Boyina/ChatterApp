@@ -94,6 +94,7 @@ class HomeViewModel @Inject constructor(
 
     fun getFriends() {
         viewModelScope.launch {
+            Log.d("started","started")
             try {
                 isLoading = true
                 val response = chatterRepository.getFriendsList()

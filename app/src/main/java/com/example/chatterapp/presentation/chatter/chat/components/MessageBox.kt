@@ -3,6 +3,7 @@ package com.example.chatterapp.presentation.chatter.chat.components
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -23,11 +24,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.min
+import androidx.navigation.NavHost
+import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
 import com.example.chatterapp.R
 import com.example.chatterapp.domain.model.Message
+import com.example.chatterapp.presentation.navGraph.Route
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
@@ -35,6 +39,7 @@ import java.time.format.DateTimeFormatter
 fun MessageBox(
     message:Message,
     backGroundColor: Color,
+    navController: NavHostController
 ) {
     Card(
         elevation = CardDefaults.cardElevation(
@@ -59,6 +64,9 @@ fun MessageBox(
                         .build(),
                     contentDescription = null,
                     modifier = Modifier.size(300.dp)
+                        .clickable {
+                            navController.navigate(Route.ImageViewer.passImageUrl(message.imageUrl))
+                        }
                 )
             } else {
                 Text(

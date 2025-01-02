@@ -11,7 +11,7 @@ object Constants {
 
     const val USER_ID = "user_id"
     const val FRIEND_ID = "chat_id"
-
+    const val IMAGE_URL = "image_url"
 
     const val BASE_URL = "http://10.0.2.2:3000/api/"
     const val SOCKET_URL = "http://10.0.2.2:3000"

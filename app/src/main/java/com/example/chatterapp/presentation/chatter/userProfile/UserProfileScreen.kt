@@ -579,9 +579,6 @@ fun UserProfileScreen(
                             Spacer(modifier = Modifier.width(10.dp))
                             Button(
                                 onClick = {
-                                    navController.navigate(Route.HomeScreen.route){
-                                        popUpTo(route = Route.HomeScreen.route){inclusive = true}
-                                    }
                                     onEvent(UserProfileEvent.LogOutUser)
                                     logoutDialog = false
 

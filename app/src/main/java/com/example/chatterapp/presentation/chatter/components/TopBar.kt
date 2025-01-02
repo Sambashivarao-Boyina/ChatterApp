@@ -21,7 +21,8 @@ import com.example.chatterapp.ui.theme.Gray
 @Composable
 fun TopBar(
     title: String,
-    navigationBox :  @Composable () -> Unit = {}
+    navigationBox :  @Composable () -> Unit = {},
+    actions:   @Composable () -> Unit = {}
 ) {
     TopAppBar(
         navigationIcon = {
@@ -38,7 +39,10 @@ fun TopBar(
             navigationIconContentColor = Gray
         ),
         modifier = Modifier.height(100.dp)
-            .padding(bottom = 10.dp)
+            .padding(bottom = 10.dp),
+        actions = {
+            actions()
+        }
     )
 
 }
