@@ -1,7 +1,5 @@
 package com.example.chatterapp.presentation.authetication.login
 
-import android.util.Log
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -12,13 +10,9 @@ import com.example.chatterapp.data.remote.ChatterApi
 import com.example.chatterapp.data.remote.Dto.LoginUser
 import com.example.chatterapp.domain.manager.LocalUserManager
 import com.example.chatterapp.presentation.authetication.components.AuthResponse
-import com.example.chatterapp.presentation.authetication.signup.SignUpEvent
 import com.example.chatterapp.util.Constants.extractData
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-import okhttp3.ResponseBody
-import org.json.JSONObject
 import retrofit2.HttpException
 import java.io.IOException
 import java.net.SocketTimeoutException
@@ -79,7 +73,7 @@ class LoginViewModel @Inject constructor(
                     val authResponse: AuthResponse? = response.body()
 
                     if(authResponse!= null && authResponse.token.isNotEmpty()) {
-                        localUserManager.saveUserTokne(token = authResponse.token)
+                        localUserManager.saveUserToken(token = authResponse.token)
                         localUserManager.saveUserAuth()
                         sideEffect = authResponse.message
                         _state.value = LoginState()

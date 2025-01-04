@@ -41,7 +41,7 @@ class LocalUserManagerImpl(
         }
     }
 
-    override suspend fun saveUserTokne(token: String) {
+    override suspend fun saveUserToken(token: String) {
         context.datastore.edit { settings ->
             settings[PreferenceKeys.USER_TOKEN] = token
         }
@@ -52,6 +52,7 @@ class LocalUserManagerImpl(
             preferencesKeys[PreferenceKeys.USER_TOKEN] ?: ""
         }
     }
+
 
     override fun readUserEntryAndAuth(): Flow<Pair<Boolean, Boolean>> {
         return context.datastore.data.map { preferenceKeys ->

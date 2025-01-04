@@ -27,6 +27,14 @@ class ChatterRepositoryImpl(
         return chatterApi.signupUser(user)
     }
 
+    override suspend fun refreshUserToken(): Response<ResponseBody> {
+        return chatterApi.refreshUserToken()
+    }
+
+    override suspend fun saveFcmToken(data: UpdateData): Response<ResponseBody> {
+        return chatterApi.saveFcmToken(data)
+    }
+
     override suspend fun getFriendsList(): Response<List<Friend>> {
         return chatterApi.getFriendList()
     }

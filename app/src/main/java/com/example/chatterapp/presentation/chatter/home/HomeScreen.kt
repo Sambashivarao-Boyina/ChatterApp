@@ -1,8 +1,10 @@
 package com.example.chatterapp.presentation.chatter.home
 
+import android.Manifest
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -45,6 +47,7 @@ import com.example.chatterapp.presentation.chatter.components.EmptyList
 import com.example.chatterapp.presentation.chatter.components.FriendCard
 import com.example.chatterapp.presentation.chatter.components.SearchBox
 import com.example.chatterapp.presentation.chatter.components.TopBar
+import com.example.chatterapp.presentation.chatter.userProfile.getFileFromUri
 import com.example.chatterapp.presentation.navGraph.Route
 import com.example.chatterapp.ui.theme.Black
 import com.example.chatterapp.ui.theme.Blue
@@ -61,7 +64,6 @@ fun HomeScreen(
     navController: NavHostController,
     activeUsers: State<List<String>>
 ) {
-
 
 
 

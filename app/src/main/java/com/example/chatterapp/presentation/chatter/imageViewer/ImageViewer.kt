@@ -128,6 +128,9 @@ fun ImageViewer(
 }
 
 suspend fun saveImage(context: Context, imageUrl: String, folderName: String): Boolean {
+    withContext(Dispatchers.Main) {
+        Toast.makeText(context, "Image Download Started", Toast.LENGTH_LONG).show()
+    }
     return withContext(Dispatchers.IO) {
         try {
             val url = URL(imageUrl)

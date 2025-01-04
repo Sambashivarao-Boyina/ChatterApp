@@ -6,7 +6,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.chatterapp.data.remote.ChatterApi
 import com.example.chatterapp.data.remote.Dto.SignUpUser
 import com.example.chatterapp.domain.manager.LocalUserManager
 import com.example.chatterapp.domain.repository.ChatterRepository
@@ -14,8 +13,6 @@ import com.example.chatterapp.presentation.authetication.components.AuthResponse
 import com.example.chatterapp.util.Constants.extractData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import okhttp3.ResponseBody
-import org.json.JSONObject
 import retrofit2.HttpException
 import java.io.IOException
 import java.net.SocketTimeoutException
@@ -94,7 +91,7 @@ class SignUpViewModel @Inject constructor(
                 if(response.isSuccessful) {
                     val authResponse: AuthResponse? = response.body()
                     if(authResponse != null && authResponse.token.isNotEmpty()) {
-                        localUserManager.saveUserTokne(token = authResponse.token)
+                        localUserManager.saveUserToken(token = authResponse.token)
                         localUserManager.saveUserAuth()
 
                         _state.value = SignupState()

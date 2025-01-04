@@ -38,6 +38,7 @@ class AppModule {
         localUserManage: LocalUserManager
     ): ChatterApi {
         val TIMEOUT = 30L // Timeout in seconds
+        val CONNECTION_TIMEOUT = 15L
 
         val loggingInterceptor = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY // Logs request and response
@@ -47,7 +48,7 @@ class AppModule {
 
         val okHttpClient: OkHttpClient by lazy {
             OkHttpClient.Builder()
-                .connectTimeout(TIMEOUT, TimeUnit.SECONDS) // Connection timeout
+                .connectTimeout(CONNECTION_TIMEOUT, TimeUnit.SECONDS) // Connection timeout
                 .readTimeout(TIMEOUT, TimeUnit.SECONDS)    // Read timeout
                 .writeTimeout(TIMEOUT, TimeUnit.SECONDS)   // Write timeout
                 .addInterceptor(loggingInterceptor)        // Add logging

@@ -18,6 +18,10 @@ interface ChatterRepository {
     suspend fun loginUser(user:LoginUser): Response<AuthResponse>
     suspend fun signupUser(user: SignUpUser):Response<AuthResponse>
 
+    suspend fun refreshUserToken(): Response<ResponseBody>
+
+    suspend fun saveFcmToken(data: UpdateData): Response<ResponseBody>
+
     //getting the friends list
     suspend fun getFriendsList(): Response<List<Friend>>
 

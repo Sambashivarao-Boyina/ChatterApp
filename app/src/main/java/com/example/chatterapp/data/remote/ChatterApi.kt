@@ -32,7 +32,13 @@ interface ChatterApi {
         @Body user: SignUpUser
     ): Response<AuthResponse>
 
+    @GET("auth/refreshToken")
+    suspend fun refreshUserToken(): Response<ResponseBody>
 
+    @PATCH("user/fcmToken")
+    suspend fun saveFcmToken(
+        @Body data: UpdateData
+    ): Response<ResponseBody>
 
 
     @GET("user")

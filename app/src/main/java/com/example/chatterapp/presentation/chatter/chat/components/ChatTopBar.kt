@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
@@ -45,10 +44,8 @@ import com.example.chatterapp.R
 import com.example.chatterapp.domain.model.Chat
 import com.example.chatterapp.domain.model.Friend
 import com.example.chatterapp.presentation.chatter.chat.ChatEvent
-import com.example.chatterapp.ui.theme.Black
 import com.example.chatterapp.ui.theme.Blue
 import com.example.chatterapp.ui.theme.DarkGray
-import com.example.chatterapp.ui.theme.Gray
 import com.example.chatterapp.ui.theme.LightGray
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -56,10 +53,10 @@ import com.example.chatterapp.ui.theme.LightGray
 fun ChatTopBar(
     friend: Friend,
     chat: Chat?,
-    onBackClick:()->Unit,
+    onBackClick: () -> Unit,
     isOnline: Boolean,
-    onEvent: (ChatEvent)->Unit,
-    navigateToProfie:()->Unit
+    onEvent: (ChatEvent) -> Unit,
+    navigateToProfie: () -> Unit
 ) {
     TopAppBar(
         navigationIcon = {
@@ -68,7 +65,11 @@ fun ChatTopBar(
                     onBackClick()
                 }
             ) {
-                Icon(imageVector = Icons.AutoMirrored.Default.ArrowBack, contentDescription = null, modifier = Modifier.size(30.dp))
+                Icon(
+                    imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                    contentDescription = null,
+                    modifier = Modifier.size(30.dp)
+                )
             }
         },
         title = {
@@ -78,11 +79,12 @@ fun ChatTopBar(
                     navigateToProfie()
                 }
             ) {
-                if(friend.person.userProfile == null) {
+                if (friend.person.userProfile == null) {
                     Image(
                         painter = painterResource(R.drawable.default_profile),
                         contentDescription = null,
-                        modifier = Modifier.size(40.dp)
+                        modifier = Modifier
+                            .size(40.dp)
                             .clip(CircleShape)
                     )
                 } else {
@@ -103,10 +105,12 @@ fun ChatTopBar(
                 Column(
                     verticalArrangement = Arrangement.Center
                 ) {
-                    Text(text = friend.person.username,
+                    Text(
+                        text = friend.person.username,
                         style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold)
-                    if(isOnline) {
+                        fontWeight = FontWeight.Bold
+                    )
+                    if (isOnline) {
                         Text(
                             text = "online",
                             color = Blue,
@@ -118,11 +122,13 @@ fun ChatTopBar(
 
         },
         actions = {
-            Row {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
                 var expanded by remember { mutableStateOf(false) }
                 Box(
                     modifier = Modifier
-                        .padding(16.dp)
                 ) {
                     IconButton(onClick = { expanded = !expanded }) {
                         Icon(Icons.Default.MoreVert, contentDescription = "More options")
@@ -133,14 +139,14 @@ fun ChatTopBar(
                         modifier = Modifier.background(color = LightGray)
                     ) {
                         chat?.let {
-                            if(chat.blockedBy == null) {
+                            if (chat.blockedBy == null) {
                                 DropdownMenuItem(
                                     text = { Text("Block") },
                                     onClick = {
                                         onEvent(ChatEvent.BlockFriend)
                                     }
                                 )
-                            } else if(chat.blockedBy._id != friend.person._id) {
+                            } else if (chat.blockedBy._id != friend.person._id) {
                                 DropdownMenuItem(
                                     text = { Text("UnBlock") },
                                     onClick = {
@@ -157,6 +163,8 @@ fun ChatTopBar(
                         )
                     }
                 }
+
+
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(

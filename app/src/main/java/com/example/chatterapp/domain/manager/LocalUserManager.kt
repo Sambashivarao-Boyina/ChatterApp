@@ -11,9 +11,10 @@ interface LocalUserManager {
 
     fun readUserAuth(): Flow<Boolean>
 
-    suspend fun saveUserTokne(token: String)
+    suspend fun saveUserToken(token: String)
 
     fun readUserToken(): Flow<String>
+
 
     fun readUserEntryAndAuth(): Flow<Pair<Boolean,Boolean>>
 

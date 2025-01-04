@@ -1,6 +1,7 @@
 package com.example.chatterapp.presentation.chatter
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -17,11 +18,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.chatterapp.MainActivity
+import com.example.chatterapp.domain.model.UserDetails
 import com.example.chatterapp.presentation.chatter.components.BottomNavItem
 import com.example.chatterapp.presentation.chatter.components.BottomNavition
 import com.example.chatterapp.presentation.chatter.components.TopBar
@@ -29,19 +34,26 @@ import com.example.chatterapp.presentation.navGraph.Route
 import com.example.chatterapp.presentation.navGraph.chatter.ChatterGraph
 import com.example.chatterapp.ui.theme.Black
 import com.example.chatterapp.ui.theme.Blue
+import com.example.chatterapp.util.Constants.ZEGO_APP_ID
+import com.example.chatterapp.util.Constants.ZEGO_APP_SIGN
+import com.google.firebase.messaging.FirebaseMessaging
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun ChatterNavigator(
+    userDetails: UserDetails?,
     chatterNavigatorViewModel: ChatterNavigatorViewModel
 ) {
+    val scope = rememberCoroutineScope()
     DisposableEffect(Unit) {
         onDispose {
             chatterNavigatorViewModel.onCleared()
         }
     }
-
+    val context = LocalContext.current as MainActivity
 
     val navController = rememberNavController()
     val backStackState = navController.currentBackStackEntryAsState().value
@@ -51,6 +63,8 @@ fun ChatterNavigator(
                 backStackState?.destination?.route == Route.SearchFriend.route ||
                 backStackState?.destination?.route == Route.UserProfile.route
     }
+
+
 
     Scaffold(
         bottomBar = {

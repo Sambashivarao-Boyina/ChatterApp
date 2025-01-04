@@ -57,6 +57,7 @@ fun NavGraph(
             composable(route = Route.ChatAppNavigator.route) {
                 val chatterNavigatorViewModel: ChatterNavigatorViewModel = hiltViewModel()
                 ChatterNavigator(
+                    userDetails = chatterNavigatorViewModel.userProfile,
                     chatterNavigatorViewModel = chatterNavigatorViewModel
                 )
             }
