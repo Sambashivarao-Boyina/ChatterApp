@@ -1,6 +1,5 @@
 package com.example.chatterapp.presentation.chatter.userProfile
 
-import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,6 +31,12 @@ class UserProfileViewModel @Inject constructor(
     var userProfile by mutableStateOf<UserDetails?>(null)
         private set
 
+    var updatePasswordValue by mutableStateOf("")
+        private set
+
+    var updatePasswordError by mutableStateOf<Boolean>(false)
+        private set
+
     var isLoading by mutableStateOf(false)
         private set
 
@@ -43,6 +48,10 @@ class UserProfileViewModel @Inject constructor(
 
     private var _updateAboutValue = mutableStateOf<String>("")
     val updateAboutValue:State<String> = _updateAboutValue
+
+    private var _updateUserName = mutableStateOf<String>("")
+    val updateUserName:State<String> = _updateUserName
+
 
     init {
         getUserDetails()
@@ -72,6 +81,33 @@ class UserProfileViewModel @Inject constructor(
 
             is UserProfileEvent.RemoveSideEffect -> {
                 sideEffect = null
+            }
+
+            UserProfileEvent.UpdateUserName -> {
+               viewModelScope.launch {
+                   sendUserName()
+                   _updateUserName.value = ""
+               }
+            }
+            is UserProfileEvent.UpdateUserNameValue -> {
+                if(event.username.trim().length <= 20){
+                    _updateUserName.value = event.username.trim()
+                }
+            }
+
+            UserProfileEvent.UpdatePassword -> {
+                viewModelScope.launch {
+                    updatePassword()
+                    updatePasswordValue = ""
+                }
+            }
+            is UserProfileEvent.UpdatePasswordValue -> {
+                if(!isStrongPassword(event.password)) {
+                    updatePasswordError = true
+                } else {
+                    updatePasswordError = false
+                }
+                updatePasswordValue = event.password
             }
         }
     }
@@ -106,6 +142,39 @@ class UserProfileViewModel @Inject constructor(
 
         } else {
             sideEffect = "data is Empty please enter some thing"
+        }
+    }
+
+    private suspend fun sendUserName() {
+        if(_updateUserName.value.trim().isNotEmpty() && _updateUserName.value.length >= 6) {
+            try {
+
+
+                val data = UpdateData(data = _updateUserName.value)
+
+                val response = chatterRepository.updateUserName(data = data)
+
+                if(response.isSuccessful) {
+                    sideEffect = extractData(response.body(),"message")
+
+                    getUserDetails()
+                } else {
+                    sideEffect = extractData(response.errorBody(),"message")
+
+                }
+
+            } catch (e: HttpException) {
+                sideEffect = e.localizedMessage
+            } catch (e: IOException) {
+                sideEffect = e.localizedMessage
+            } catch (e: SocketTimeoutException) {
+                sideEffect = e.localizedMessage
+            } catch (e: Exception) {
+                sideEffect = e.localizedMessage
+            }
+
+        } else {
+            sideEffect = "Username should contains at least 6 characters"
         }
     }
 
@@ -166,17 +235,72 @@ class UserProfileViewModel @Inject constructor(
         }
     }
 
+    private suspend fun updatePassword() {
+        try {
+            val data = UpdateData(data = updatePasswordValue)
+            val response = chatterRepository.updatePassword(data)
+            if(response.isSuccessful) {
+                sideEffect = extractData(response.body(),"message")
+            } else {
+                sideEffect = extractData(response.body(), "message")
+            }
+        } catch (e: HttpException) {
+            sideEffect = e.localizedMessage
+        } catch (e: IOException) {
+            sideEffect = e.localizedMessage
+        } catch (e: SocketTimeoutException) {
+            sideEffect = e.localizedMessage
+        } catch (e: Exception) {
+            sideEffect = e.localizedMessage
+        }
+    }
+
+
+    private fun isStrongPassword(password: String): Boolean{
+        // Check minimum length
+        if (password.length < 8) {
+            return false
+        }
+
+        if (!password.any { it.isUpperCase() }) {
+            return false
+        }
+
+        // Check for at least one lowercase letter
+        if (!password.any { it.isLowerCase() }) {
+            return false
+        }
+
+        // Check for at least one digit
+        if (!password.any { it.isDigit() }) {
+            return false
+        }
+
+        // Check for at least one special character
+        val specialCharacters = "!@#$%^&*(),.?\":{}|<>"
+        if (!password.any { it in specialCharacters }) {
+            return false
+        }
+
+        return true
+    }
 
 
 }
 
 
+
 sealed class UserProfileEvent {
     data class UpdateAboutValue(val about:String): UserProfileEvent()
-
+    data class UpdateUserNameValue(val username: String): UserProfileEvent()
     object UpdateAbout: UserProfileEvent()
+    object UpdateUserName: UserProfileEvent()
+
+    data class UpdatePasswordValue(val password: String): UserProfileEvent()
+    object UpdatePassword: UserProfileEvent()
 
     object LogOutUser: UserProfileEvent()
 
     object RemoveSideEffect: UserProfileEvent()
 }
+

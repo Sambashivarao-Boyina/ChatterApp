@@ -1,6 +1,7 @@
 package com.example.chatterapp.data.repository
 
 import com.example.chatterapp.data.remote.ChatterApi
+import com.example.chatterapp.data.remote.Dto.GoogleAuth
 import com.example.chatterapp.data.remote.Dto.LoginUser
 import com.example.chatterapp.data.remote.Dto.SendedData
 import com.example.chatterapp.data.remote.Dto.SignUpUser
@@ -25,6 +26,10 @@ class ChatterRepositoryImpl(
 
     override suspend fun signupUser(user: SignUpUser): Response<AuthResponse> {
         return chatterApi.signupUser(user)
+    }
+
+    override suspend fun googleAuth(data: GoogleAuth): Response<AuthResponse> {
+        return chatterApi.googleAuth(data)
     }
 
     override suspend fun refreshUserToken(): Response<ResponseBody> {
@@ -57,6 +62,14 @@ class ChatterRepositoryImpl(
 
     override suspend fun updateUserAbout(updateData: UpdateData): Response<ResponseBody> {
         return chatterApi.updateUserAbout(data = updateData)
+    }
+
+    override suspend fun updateUserName(data: UpdateData): Response<ResponseBody> {
+        return chatterApi.updateUserName(data)
+    }
+
+    override suspend fun updatePassword(data: UpdateData): Response<ResponseBody> {
+        return chatterApi.updatePassword(data)
     }
 
     override suspend fun userSendedRequest(): Response<List<FriendRequest>> {

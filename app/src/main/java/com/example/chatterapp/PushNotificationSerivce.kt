@@ -8,12 +8,14 @@ import com.example.chatterapp.data.remote.Dto.UpdateData
 import com.example.chatterapp.domain.repository.ChatterRepository
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.Random
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class PushNotificationSerivce: FirebaseMessagingService() {
     @Inject
     lateinit var chatterRepository: ChatterRepository
@@ -42,9 +44,10 @@ class PushNotificationSerivce: FirebaseMessagingService() {
     }
 
     private fun sendTokenToBackend(token: String) {
+
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val response = chatterRepository.saveFcmToken(UpdateData(token))
+               chatterRepository.saveFcmToken(UpdateData(token))
 
             } catch (e: Exception) {
                 Log.e("FCM", "Error sending token to backend: ${e.message}")

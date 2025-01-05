@@ -1,5 +1,6 @@
 package com.example.chatterapp.domain.repository
 
+import com.example.chatterapp.data.remote.Dto.GoogleAuth
 import com.example.chatterapp.data.remote.Dto.LoginUser
 import com.example.chatterapp.data.remote.Dto.SendedData
 import com.example.chatterapp.data.remote.Dto.SignUpUser
@@ -17,6 +18,8 @@ import retrofit2.Response
 interface ChatterRepository {
     suspend fun loginUser(user:LoginUser): Response<AuthResponse>
     suspend fun signupUser(user: SignUpUser):Response<AuthResponse>
+
+    suspend fun googleAuth(data: GoogleAuth):Response<AuthResponse>
 
     suspend fun refreshUserToken(): Response<ResponseBody>
 
@@ -40,6 +43,14 @@ interface ChatterRepository {
     suspend fun updateUserAbout(
         updateData: UpdateData
     ): Response<ResponseBody>
+
+    suspend fun updateUserName(
+        data: UpdateData
+    ): Response<ResponseBody>
+
+    suspend fun updatePassword(
+        data: UpdateData
+    ):Response<ResponseBody>
 
     //user sended Request
     suspend fun userSendedRequest(): Response<List<FriendRequest>>

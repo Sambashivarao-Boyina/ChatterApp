@@ -94,13 +94,28 @@ class HomeViewModel @Inject constructor(
 
     fun getFriends() {
         viewModelScope.launch {
-            Log.d("started","started")
             try {
                 isLoading = true
                 val response = chatterRepository.getFriendsList()
                 if (response.isSuccessful) {
                     if (response.body() != null) {
-                        _friends.value = response.body()!!
+                       val friendsList  = response.body()!!
+                        val sortedFriends = friendsList.sortedWith { friend1, friend2 ->
+                            val lastMessage1 = friend1.lastMessage
+                            val lastMessage2 = friend2.lastMessage
+
+                            // If both friends have a message, compare by createdAt (from new to old)
+                            if (lastMessage1 != null && lastMessage2 != null) {
+                                lastMessage2.createdAt.compareTo(lastMessage1.createdAt)  // new to old
+                            } else if (lastMessage1 != null) {
+                                -1
+                            } else if (lastMessage2 != null) {
+                                1
+                            } else {
+                                0
+                            }
+                        }
+                        _friends.value = sortedFriends
                     } else {
                         sideEffect = "you didn't have frineds"
                     }
@@ -119,7 +134,6 @@ class HomeViewModel @Inject constructor(
             } catch (e: Exception) {
                 sideEffect = e.localizedMessage
             }
-            Log.d("error", sideEffect.toString())
             isLoading = false
 
         }

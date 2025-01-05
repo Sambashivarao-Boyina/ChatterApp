@@ -6,10 +6,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.chatterapp.data.remote.Dto.GoogleAuth
 import com.example.chatterapp.data.remote.Dto.SignUpUser
 import com.example.chatterapp.domain.manager.LocalUserManager
 import com.example.chatterapp.domain.repository.ChatterRepository
 import com.example.chatterapp.presentation.authetication.components.AuthResponse
+import com.example.chatterapp.presentation.authetication.login.LoginEvent
+import com.example.chatterapp.presentation.authetication.login.LoginState
 import com.example.chatterapp.util.Constants.extractData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -74,6 +77,13 @@ class SignUpViewModel @Inject constructor(
             is SignUpEvent.UsernameErrorUpdate -> {
                 _state.value = _state.value.copy(isUserNameError = event.isUserNameError)
             }
+
+            is SignUpEvent.GoogleAuth -> {
+                googleAuth(
+                    email = event.email,
+                    username = event.username
+                )
+            }
         }
     }
 
@@ -117,6 +127,41 @@ class SignUpViewModel @Inject constructor(
         }
 
     }
+
+    private fun googleAuth(email: String, username: String) {
+        viewModelScope.launch {
+            try {
+                val response = chatterRepository.googleAuth(data = GoogleAuth(
+                    email = email,
+                    username = username
+                )
+                )
+                if(response.isSuccessful) {
+                    val authResponse: AuthResponse? = response.body()
+
+                    if(authResponse!= null && authResponse.token.isNotEmpty()) {
+                        localUserManager.saveUserToken(token = authResponse.token)
+                        localUserManager.saveUserAuth()
+                        sideEffect = authResponse.message
+                    } else {
+                        sideEffect = "Some thing went wrong Please try again"
+                    }
+
+                } else {
+                    sideEffect = extractData(response.errorBody(),"message")
+                }
+            }catch (e: HttpException) {
+                sideEffect = e.localizedMessage
+            } catch (e: IOException) {
+                sideEffect = e.localizedMessage
+            } catch (e: SocketTimeoutException) {
+                sideEffect = e.localizedMessage
+            } catch (e: Exception) {
+                sideEffect = e.localizedMessage
+            }
+        }
+    }
+
 
 
     private fun validateDate(): Boolean {
@@ -207,6 +252,8 @@ sealed class SignUpEvent {
     data class EmailUpdate(val email:String) : SignUpEvent()
     data class PasswordUpdate(val password:String) : SignUpEvent()
     data class ConfirmPasswordUpdate(val confirmPassword:String) : SignUpEvent()
+
+    data class GoogleAuth(val email: String, val username: String): SignUpEvent()
 
     data class UsernameErrorUpdate(val isUserNameError:Boolean) : SignUpEvent()
     data class EmailErrorUpdate(val isEmailError:Boolean) : SignUpEvent()

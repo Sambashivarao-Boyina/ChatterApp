@@ -29,11 +29,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -70,14 +70,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
-import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
 import com.example.chatterapp.R
 import com.example.chatterapp.domain.model.UserDetails
-import com.example.chatterapp.presentation.chatter.components.EmptyList
+import com.example.chatterapp.presentation.authetication.components.PasswordInput
 import com.example.chatterapp.presentation.chatter.components.TopBar
 import com.example.chatterapp.presentation.chatter.components.UploadingIndicator
 import com.example.chatterapp.presentation.navGraph.Route
@@ -94,9 +93,12 @@ fun UserProfileScreen(
     refershData: () -> Unit,
     onEvent:(UserProfileEvent) -> Unit,
     updateAboutValue: String,
+    updateUserNameValue: String,
     navController : NavHostController,
     uploadImage:(File)->Unit,
-    isUploading: Boolean
+    isUploading: Boolean,
+    updatePasswordValue: String,
+    updatePasswordError: Boolean
 ) {
 
     val context = LocalContext.current
@@ -139,12 +141,23 @@ fun UserProfileScreen(
             mutableStateOf(false)
         }
 
-        var sheetState = rememberModalBottomSheetState()
-        val scope = rememberCoroutineScope()
-
-        var showBottomSheet by remember {
+        var passwordDialog by remember{
             mutableStateOf(false)
         }
+
+        var aboutSheet = rememberModalBottomSheetState()
+        val userNameSheet = rememberModalBottomSheetState()
+        val scope = rememberCoroutineScope()
+
+        var showAboutSheet by remember {
+            mutableStateOf(false)
+        }
+
+        var showUserNameSheet by remember {
+            mutableStateOf(false)
+        }
+
+
         val pullToRefreshState = rememberPullToRefreshState()
         Box(
             modifier = Modifier
@@ -248,25 +261,22 @@ fun UserProfileScreen(
                                         )
 
                                     }
-                                }
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Box(modifier = Modifier.size(40.dp))
+
                                     Spacer(Modifier.width(20.dp))
-                                    Column(
-                                        modifier = Modifier.weight(1f)
+                                    IconButton(
+                                        onClick = {
+                                            showUserNameSheet = true
+                                        }
                                     ) {
-                                        Text(
-                                            text = "The username cannot be edited it is created when you created your account",
-                                            color = Gray,
-                                            style = MaterialTheme.typography.labelMedium
+                                        Icon(
+                                            imageVector = Icons.Default.Edit,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(40.dp),
+                                            tint = Blue
                                         )
-                                        Spacer(modifier = Modifier.height(10.dp))
-                                        HorizontalDivider()
                                     }
                                 }
+
                                 Spacer(modifier = Modifier.height(20.dp))
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
@@ -297,7 +307,7 @@ fun UserProfileScreen(
                                     Spacer(Modifier.width(20.dp))
                                     IconButton(
                                         onClick = {
-                                            showBottomSheet = true
+                                            showAboutSheet = true
                                         }
                                     ) {
                                         Icon(
@@ -356,6 +366,26 @@ fun UserProfileScreen(
                                 Spacer(modifier = Modifier.height(20.dp))
                                 TextButton(
                                     onClick = {
+                                        passwordDialog = true
+                                    },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    shape = RoundedCornerShape(10.dp),
+                                    colors = ButtonDefaults.buttonColors().copy(
+                                        containerColor = Blue.copy(0.06f),
+                                        contentColor = Blue
+                                    )
+                                ) {
+                                    Text(
+                                        text = "Change Password",
+                                        style = MaterialTheme.typography.titleLarge,
+                                        fontWeight = FontWeight.Bold,
+                                    )
+
+                                }
+
+                                Spacer(modifier = Modifier.height(20.dp))
+                                TextButton(
+                                    onClick = {
                                         logoutDialog = true
                                     },
                                     modifier = Modifier.fillMaxWidth(),
@@ -366,7 +396,7 @@ fun UserProfileScreen(
                                     )
                                 ) {
                                     Text(
-                                        text = "Log Out".uppercase(),
+                                        text = "LOG OUT",
                                         style = MaterialTheme.typography.titleMedium,
                                         fontWeight = FontWeight.Bold,
                                     )
@@ -412,6 +442,8 @@ fun UserProfileScreen(
                 }
             }
 
+
+
             if(pullToRefreshState.isRefreshing) {
                 LaunchedEffect(true) {
                     refershData()
@@ -439,12 +471,12 @@ fun UserProfileScreen(
             )
         }
 
-        if(showBottomSheet) {
+        if(showAboutSheet) {
             ModalBottomSheet(
                 onDismissRequest = {
-                    showBottomSheet = false
+                    showAboutSheet = false
                 },
-                sheetState = sheetState
+                sheetState = aboutSheet
             ) {
                 Surface(
                     modifier = Modifier
@@ -505,7 +537,7 @@ fun UserProfileScreen(
                         ) {
                             TextButton(
                                 onClick = {
-                                    showBottomSheet = false
+                                    showAboutSheet = false
                                 },
                             ) {
                                 Text(text = "Cancel", color = Blue)
@@ -513,7 +545,7 @@ fun UserProfileScreen(
                             TextButton(
                                 onClick = {
                                     onEvent(UserProfileEvent.UpdateAbout)
-                                    showBottomSheet = false
+                                    showAboutSheet = false
                                 },
                             ) {
                                 Text(text = "Save", color = Blue)
@@ -523,6 +555,88 @@ fun UserProfileScreen(
                 }
             }
         }
+
+        if(showUserNameSheet) {
+            ModalBottomSheet(
+                onDismissRequest = {
+                    showUserNameSheet = false
+                },
+                sheetState = userNameSheet
+            ) {
+                Surface(
+                    modifier = Modifier
+                        .wrapContentWidth()
+                        .wrapContentHeight()
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(color = Color.Transparent),
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .background(color = Color.Transparent)
+                            .padding(20.dp)
+                    ) {
+                        Text(
+                            text = "Change UserName",
+                            fontWeight = FontWeight.SemiBold,
+                            style = MaterialTheme.typography.titleLarge
+                        )
+                        Spacer(modifier = Modifier.height(20.dp))
+                        TextField(
+                            value = updateUserNameValue,
+                            onValueChange = {
+                                onEvent(UserProfileEvent.UpdateUserNameValue(it))
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Filled.Person,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(40.dp),
+                                )
+                            },
+                            placeholder = {
+                                Text(text = "Enter the Username")
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = TextFieldDefaults.colors().copy(
+                                focusedContainerColor = Color.Transparent,
+                                unfocusedContainerColor = Color.Transparent,
+                                focusedIndicatorColor = Blue,
+                                unfocusedIndicatorColor = Blue,
+                                unfocusedTrailingIconColor = Gray,
+                                focusedTrailingIconColor = Blue,
+                                cursorColor = Blue,
+                                focusedLeadingIconColor = Blue,
+                                unfocusedLeadingIconColor = Color.Gray
+                            ),
+                        )
+                        Spacer(modifier = Modifier.height(20.dp))
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.End
+                        ) {
+                            TextButton(
+                                onClick = {
+                                    showUserNameSheet = false
+                                },
+                            ) {
+                                Text(text = "Cancel", color = Blue)
+                            }
+                            TextButton(
+                                onClick = {
+                                    onEvent(UserProfileEvent.UpdateUserName)
+                                    showUserNameSheet = false
+                                },
+                            ) {
+                                Text(text = "Save", color = Blue)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
 
         if(logoutDialog) {
             BasicAlertDialog(
@@ -596,8 +710,91 @@ fun UserProfileScreen(
                     }
                 }
             }
+        }
 
+        if(passwordDialog) {
+            BasicAlertDialog(
+                onDismissRequest = {
+                    passwordDialog = false
+                },
+                properties = DialogProperties(
+                    dismissOnClickOutside = true,
+                    dismissOnBackPress = true,
+                    usePlatformDefaultWidth = true
+                ),
+            ) {
+                Surface(
+                    modifier = Modifier
+                        .wrapContentWidth()
+                        .wrapContentHeight()
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(color = Gray),
+                    tonalElevation = AlertDialogDefaults.TonalElevation
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .padding(20.dp)
+                    ) {
+                        Text(
+                            text = "Change Password",
+                            color = Blue,
+                            fontWeight = FontWeight.SemiBold,
+                            style = MaterialTheme.typography.titleLarge
+                        )
+                        Spacer(Modifier.height(20.dp))
 
+                        PasswordInput(
+                            value = updatePasswordValue,
+                            placeholder = "Password",
+                            onChange = {
+                                onEvent(UserProfileEvent.UpdatePasswordValue(it))
+                            },
+                            isError = updatePasswordError
+                        )
+                        Spacer(Modifier.height(10.dp))
+                        Text(
+                            text = "The password length should be at least 8 , it should be the combination of uppercase, lowercase, digits and sepcial characters.",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = Gray
+                        )
+
+                        Spacer(Modifier.height(20.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.End
+                        ) {
+                            Button(
+                                onClick = {
+                                    passwordDialog = false
+                                },
+                                shape = RoundedCornerShape(10.dp),
+                                colors = ButtonDefaults.buttonColors().copy(
+                                    containerColor = Blue.copy(alpha = 0.1f),
+                                    contentColor = Blue
+                                )
+                            ) {
+                                Text("Cancel", fontWeight = FontWeight.SemiBold)
+                            }
+                            Spacer(modifier = Modifier.width(10.dp))
+                            Button(
+                                onClick = {
+                                    onEvent(UserProfileEvent.UpdatePassword)
+                                    passwordDialog = false
+
+                                },
+                                shape = RoundedCornerShape(10.dp),
+                                colors = ButtonDefaults.buttonColors().copy(
+                                    containerColor = Blue,
+                                    contentColor = Color.White
+                                ),
+                                enabled = !updatePasswordError
+                            ) {
+                                Text("Change", fontWeight = FontWeight.SemiBold)
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         if(isUploading) {

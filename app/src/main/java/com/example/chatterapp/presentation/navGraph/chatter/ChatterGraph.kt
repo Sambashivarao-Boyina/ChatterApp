@@ -115,9 +115,12 @@ fun ChatterGraph(
                 refershData = userProfileViewModel::getUserDetails,
                 onEvent = userProfileViewModel::onEvent,
                 updateAboutValue = userProfileViewModel.updateAboutValue.value,
+                updateUserNameValue = userProfileViewModel.updateUserName.value,
                 navController = navController,
                 uploadImage = userProfileViewModel::uploadImage,
-                isUploading = userProfileViewModel.isUploading
+                isUploading = userProfileViewModel.isUploading,
+                updatePasswordValue = userProfileViewModel.updatePasswordValue,
+                updatePasswordError = userProfileViewModel.updatePasswordError
             )
         }
 

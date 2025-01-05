@@ -98,23 +98,36 @@ class ChatViewModel @Inject constructor(
 
 
     private fun setUpSocket() {
-        // Check if the socket is connected, or wait for the connection event
+        Log.d("socket",socket.toString())
         if (socket.connected()) {
-            addSocketListeners()
+            addSocketListeners() // Socket is already connected, add listeners
         } else {
             socket.on(Socket.EVENT_CONNECT) {
-                addSocketListeners()
+                addSocketListeners() // Add listeners once connected
             }
+
+            socket.on(Socket.EVENT_CONNECT_ERROR) {
+                Log.d("Socket", "Error connecting to socket: ${it[0]}")
+                // Optionally implement retry logic here
+            }
+
+            socket.connect() // Attempt to connect if not already connected
         }
     }
 
     private fun addSocketListeners() {
         try {
-            socket.on("message_received", onMessageListner)
-            socket.on("user_list", onUserListReceived)
-            socket.on("chat_updated", onChatUpdated)
+            if(socket.connected()) {
+                Log.d("connected","socket is connected")
+                socket.on("message_received", onMessageListner)
+                socket.on("user_list", onUserListReceived)
+                socket.on("chat_updated", onChatUpdated)
+
+            } else {
+                Log.d("socket","socket is not connected so not able to listen")
+            }
         } catch (e: Exception) {
-            Log.d("error", "Error setting up socket listeners: ${e.localizedMessage}")
+            Log.d("error", "Error setting up socket listeners")
         }
     }
 

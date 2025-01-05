@@ -52,8 +52,8 @@ class ChatterNavigatorViewModel @Inject constructor(
 
     private fun initToken() {
         viewModelScope.launch {
-            val token = FirebaseMessaging.getInstance().token.await()
             try {
+                val token = FirebaseMessaging.getInstance().token.await()
                 chatterRepository.saveFcmToken(data = UpdateData(token))
             }catch (e:Exception) {
                 Log.d("Error","Error")

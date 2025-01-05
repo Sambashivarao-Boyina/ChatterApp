@@ -7,8 +7,11 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.chatterapp.data.remote.ChatterApi
+import com.example.chatterapp.data.remote.Dto.GoogleAuth
 import com.example.chatterapp.data.remote.Dto.LoginUser
+import com.example.chatterapp.data.remote.Dto.UpdateData
 import com.example.chatterapp.domain.manager.LocalUserManager
+import com.example.chatterapp.domain.repository.ChatterRepository
 import com.example.chatterapp.presentation.authetication.components.AuthResponse
 import com.example.chatterapp.util.Constants.extractData
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,7 +24,7 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val localUserManager: LocalUserManager,
-    private val chatterApi: ChatterApi
+    private val chatterRepository: ChatterRepository
 ): ViewModel() {
     private val _state = mutableStateOf(LoginState())
     val state:State<LoginState> = _state
@@ -51,6 +54,10 @@ class LoginViewModel @Inject constructor(
                 sideEffect = null
             }
 
+            is LoginEvent.GoogleAuth -> {
+                googleAuth(email = event.email, username = event.username)
+            }
+
             is LoginEvent.EmailErrorUpdate -> {
                 _state.value = _state.value.copy(isEmailError = event.isEmailError)
             }
@@ -68,7 +75,7 @@ class LoginViewModel @Inject constructor(
             )
             isLoading = true
             try {
-                val response = chatterApi.loginUser(user = user)
+                val response = chatterRepository.loginUser(user = user)
                 if(response.isSuccessful) {
                     val authResponse: AuthResponse? = response.body()
 
@@ -100,6 +107,39 @@ class LoginViewModel @Inject constructor(
 
     }
 
+    private fun googleAuth(email: String, username: String) {
+        viewModelScope.launch {
+            try {
+                val response = chatterRepository.googleAuth(data = GoogleAuth(
+                    email = email,
+                    username = username
+                ))
+                if(response.isSuccessful) {
+                    val authResponse: AuthResponse? = response.body()
+
+                    if(authResponse!= null && authResponse.token.isNotEmpty()) {
+                        localUserManager.saveUserToken(token = authResponse.token)
+                        localUserManager.saveUserAuth()
+                        sideEffect = authResponse.message
+                        _state.value = LoginState()
+                    } else {
+                        sideEffect = "Some thing went wrong Please try again"
+                    }
+
+                } else {
+                    sideEffect = extractData(response.errorBody(),"message")
+                }
+            }catch (e: HttpException) {
+                sideEffect = e.localizedMessage
+            } catch (e: IOException) {
+                sideEffect = e.localizedMessage
+            } catch (e: SocketTimeoutException) {
+                sideEffect = e.localizedMessage
+            } catch (e: Exception) {
+                sideEffect = e.localizedMessage
+            }
+        }
+    }
 
 
     private fun validateData():Boolean {
@@ -134,6 +174,8 @@ data class LoginState (
 sealed class LoginEvent {
     data class EmailUpdate(val email:String): LoginEvent()
     data class PasswordUpdate(val password: String): LoginEvent()
+
+    data class GoogleAuth(val email: String, val username: String): LoginEvent()
 
     data class EmailErrorUpdate(val isEmailError:Boolean) : LoginEvent()
     data class PasswordErrorUpdate(val isPasswordError:Boolean) : LoginEvent()

@@ -1,5 +1,6 @@
 package com.example.chatterapp.data.remote
 
+import com.example.chatterapp.data.remote.Dto.GoogleAuth
 import com.example.chatterapp.data.remote.Dto.LoginUser
 import com.example.chatterapp.data.remote.Dto.SendedData
 import com.example.chatterapp.data.remote.Dto.SignUpUser
@@ -32,6 +33,12 @@ interface ChatterApi {
         @Body user: SignUpUser
     ): Response<AuthResponse>
 
+
+    @POST("auth/google")
+    suspend fun googleAuth(
+        @Body data: GoogleAuth
+    ):Response<AuthResponse>
+
     @GET("auth/refreshToken")
     suspend fun refreshUserToken(): Response<ResponseBody>
 
@@ -43,6 +50,8 @@ interface ChatterApi {
 
     @GET("user")
     suspend fun getAllUser(): Response<List<User>>
+
+
 
     //search User
     @GET("user/search/{searchValue}")
@@ -85,6 +94,12 @@ interface ChatterApi {
     @PATCH("user/updateProfile")
     suspend fun updateUserProfile(@Part file: MultipartBody.Part): Response<ResponseBody>
 
+
+    @PATCH("user/username")
+    suspend fun updateUserName(@Body data: UpdateData) : Response<ResponseBody>
+
+    @PATCH("user/password")
+    suspend fun updatePassword(@Body data: UpdateData): Response<ResponseBody>
 
 
     //chat
