@@ -7,6 +7,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.chatterapp.domain.manager.LocalUserManager
+import com.example.chatterapp.domain.model.UserDetails
 import com.example.chatterapp.domain.repository.ChatterRepository
 import com.example.chatterapp.presentation.navGraph.Route
 import com.example.chatterapp.util.Constants.extractData
@@ -16,6 +17,9 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
+import java.io.IOException
+import java.net.SocketTimeoutException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -28,7 +32,10 @@ class MainViewModel @Inject constructor(
 
     var startDestination by mutableStateOf(Route.AppStartScreen.route)
 
+
+
     init {
+
         localUserManager.readUserEntryAndAuth().onEach { states ->
             val onBoarding = states.first
             val userAuth = states.second
@@ -69,4 +76,6 @@ class MainViewModel @Inject constructor(
         }.launchIn(viewModelScope)
 
     }
+
+
 }

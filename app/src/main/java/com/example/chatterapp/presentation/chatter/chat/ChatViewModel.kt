@@ -1,17 +1,17 @@
 package com.example.chatterapp.presentation.chatter.chat
 
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.chatterapp.data.remote.Dto.SendedData
 import com.example.chatterapp.domain.model.Chat
 import com.example.chatterapp.domain.model.Friend
 import com.example.chatterapp.domain.repository.ChatterRepository
-import com.example.chatterapp.presentation.authetication.login.LoginScreen
 import com.example.chatterapp.util.Constants.extractData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.socket.client.Socket
@@ -25,7 +25,6 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import org.json.JSONArray
 import retrofit2.HttpException
-import java.io.Console
 import java.io.File
 import java.io.IOException
 import java.net.SocketTimeoutException
@@ -98,8 +97,12 @@ class ChatViewModel @Inject constructor(
 
 
     private fun setUpSocket() {
-        Log.d("socket",socket.toString())
+
+        if (socket == null) {
+            return
+        }
         if (socket.connected()) {
+
             addSocketListeners() // Socket is already connected, add listeners
         } else {
             socket.on(Socket.EVENT_CONNECT) {
@@ -107,49 +110,44 @@ class ChatViewModel @Inject constructor(
             }
 
             socket.on(Socket.EVENT_CONNECT_ERROR) {
-                Log.d("Socket", "Error connecting to socket: ${it[0]}")
+                Log.d("SetUpSocket", "Error connecting to socket: ${it[0]}")
                 // Optionally implement retry logic here
             }
-
-            socket.connect() // Attempt to connect if not already connected
         }
+
     }
 
     private fun addSocketListeners() {
         try {
             if(socket.connected()) {
-                Log.d("connected","socket is connected")
-                socket.on("message_received", onMessageListner)
-                socket.on("user_list", onUserListReceived)
-                socket.on("chat_updated", onChatUpdated)
+
+                socket.on("message_received") { args ->
+                    getChat()
+
+                }
+                socket.on("user_list"){ args ->
+                    if(args.isNotEmpty()) {
+                        val jsonArray = args[0] as JSONArray
+                        val usersList = mutableListOf<String>()
+                        for(i in 0 until jsonArray.length()){
+                            usersList.add(jsonArray.getString(i))
+                        }
+                        _activeUser.value = usersList
+                    }
+                }
+                socket.on("chat_updated"){ args ->
+                    getChat()
+                }
+
 
             } else {
-                Log.d("socket","socket is not connected so not able to listen")
+                Log.d("socketConnection","socket is not connected so not able to listen")
             }
         } catch (e: Exception) {
             Log.d("error", "Error setting up socket listeners")
         }
     }
 
-
-    private val onMessageListner = Emitter.Listener { args ->
-        getChat()
-    }
-
-    private val onChatUpdated = Emitter.Listener { args ->
-        getChat()
-    }
-
-    private val onUserListReceived = Emitter.Listener { args ->
-        if(args.isNotEmpty()) {
-            val jsonArray = args[0] as JSONArray
-            val usersList = mutableListOf<String>()
-            for(i in 0 until jsonArray.length()){
-                usersList.add(jsonArray.getString(i))
-            }
-            _activeUser.value = usersList
-        }
-    }
 
 
     fun getFriend() {
@@ -164,13 +162,7 @@ class ChatViewModel @Inject constructor(
                         sideEffect = extractData(response.errorBody(),"message")
                     }
 
-                }catch (e: HttpException) {
-                    sideEffect = e.localizedMessage
-                } catch (e: IOException) {
-                    sideEffect = e.localizedMessage
-                } catch (e: SocketTimeoutException) {
-                    sideEffect = e.localizedMessage
-                } catch (e: Exception) {
+                }catch (e: Exception) {
                     sideEffect = e.localizedMessage
                 }
             }
@@ -265,7 +257,6 @@ class ChatViewModel @Inject constructor(
 
                    if(response.isSuccessful) {
                        chat = response.body()
-
                    } else{
                        sideEffect = extractData(response.errorBody(),"message")
                    }
@@ -279,6 +270,7 @@ class ChatViewModel @Inject constructor(
                } catch (e: Exception) {
                    sideEffect = e.localizedMessage
                }
+               Log.d("error",sideEffect.toString())
            }
         }
     }
@@ -341,8 +333,9 @@ class ChatViewModel @Inject constructor(
     override fun onCleared() {
         super.onCleared()
         viewModelScope.launch(Dispatchers.IO) {
-            socket.off("message_received", onMessageListner)
-            socket.off("user_list", onUserListReceived)
+            socket.off("message_received")
+            socket.off("user_list")
+            socket.off("chat_updated")
         }
     }
 

@@ -13,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.chatterapp"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -31,6 +31,7 @@ android {
                 "proguard-rules.pro"
             )
         }
+
 
     }
     compileOptions {
@@ -127,6 +128,8 @@ dependencies {
     implementation("androidx.credentials:credentials:1.5.0-alpha05")
     implementation("androidx.credentials:credentials-play-services-auth:1.5.0-alpha05")
     implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
+
+
 
 }
 

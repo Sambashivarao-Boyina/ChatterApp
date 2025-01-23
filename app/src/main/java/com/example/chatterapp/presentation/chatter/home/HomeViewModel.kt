@@ -51,25 +51,37 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun setupSocket() {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                socket.on("user_list", onUserListReceived)
-            }catch (e:Exception) {
-                Log.d("error","error")
+        try {
+            if(socket.connected()){
+                socket.on("user_list"){ args ->
+                    if (args.isNotEmpty()) {
+                        val jsonArray = args[0] as JSONArray
+                        val usersList = mutableListOf<String>()
+                        for (i in 0 until jsonArray.length()) {
+                            usersList.add(jsonArray.getString(i))
+                        }
+                        _activeUser.value = usersList
+                    }
+                }
+            } else {
+                socket.on(Socket.EVENT_CONNECT) {
+                    socket.on("user_list") { args ->
+                        if (args.isNotEmpty()) {
+                            val jsonArray = args[0] as JSONArray
+                            val usersList = mutableListOf<String>()
+                            for (i in 0 until jsonArray.length()) {
+                                usersList.add(jsonArray.getString(i))
+                            }
+                            _activeUser.value = usersList
+                        }
+                    }
+                }
             }
+        } catch (e: Exception) {
+            Log.d("error", "error")
         }
     }
 
-    private val onUserListReceived = Emitter.Listener { args ->
-        if(args.isNotEmpty()) {
-            val jsonArray = args[0] as JSONArray
-            val usersList = mutableListOf<String>()
-            for(i in 0 until jsonArray.length()){
-                usersList.add(jsonArray.getString(i))
-            }
-            _activeUser.value = usersList
-        }
-    }
 
     fun onEvent(event: HomeEvent) {
         when (event) {
@@ -83,7 +95,7 @@ class HomeViewModel @Inject constructor(
 
             HomeEvent.Search -> {
                 searchValue = searchValue.trim()
-                if(searchValue == "") {
+                if (searchValue == "") {
                     getFriends()
                 } else {
                     _friends.value = filterFriendsByUsername(searchValue, _friends.value)
@@ -99,7 +111,7 @@ class HomeViewModel @Inject constructor(
                 val response = chatterRepository.getFriendsList()
                 if (response.isSuccessful) {
                     if (response.body() != null) {
-                       val friendsList  = response.body()!!
+                        val friendsList = response.body()!!
                         val sortedFriends = friendsList.sortedWith { friend1, friend2 ->
                             val lastMessage1 = friend1.lastMessage
                             val lastMessage2 = friend2.lastMessage
@@ -143,12 +155,18 @@ class HomeViewModel @Inject constructor(
 
     private fun filterFriendsByUsername(searchValue: String, friends: List<Friend>): List<Friend> {
         return friends.filter { friend ->
-            // Normalize the username and searchValue by removing spaces and ignoring case
+
             val normalizedUsername = friend.person.username.replace(" ", "").lowercase()
             val normalizedSearchValue = searchValue.replace(" ", "").lowercase()
 
-            // Check if the normalized username contains the normalized search value
             normalizedUsername.contains(normalizedSearchValue)
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        viewModelScope.launch(Dispatchers.IO) {
+            socket.off("user_list")
         }
     }
 

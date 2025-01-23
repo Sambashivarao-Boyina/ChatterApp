@@ -7,13 +7,16 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.runtime.LaunchedEffect
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.FragmentActivity
+import com.example.chatterapp.domain.model.UserDetails
 import com.example.chatterapp.presentation.navGraph.NavGraph
 import com.example.chatterapp.ui.theme.ChatterAppTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -27,6 +30,8 @@ class MainActivity : FragmentActivity() {
         super.onCreate(savedInstanceState)
         requestNotificationPermission()
         enableEdgeToEdge()
+
+
 
         installSplashScreen().apply {
             setKeepOnScreenCondition {
@@ -42,6 +47,10 @@ class MainActivity : FragmentActivity() {
 
 
     }
+
+
+
+
     private fun requestNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             val hasPermissions = ContextCompat.checkSelfPermission(
@@ -49,7 +58,7 @@ class MainActivity : FragmentActivity() {
                 Manifest.permission.POST_NOTIFICATIONS,
             ) == PackageManager.PERMISSION_GRANTED
 
-            if(!hasPermissions) {
+            if (!hasPermissions) {
                 ActivityCompat.requestPermissions(
                     this,
                     arrayOf(Manifest.permission.POST_NOTIFICATIONS),

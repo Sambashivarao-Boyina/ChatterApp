@@ -39,15 +39,11 @@ class ChatterNavigatorViewModel @Inject constructor(
         getUserDetails()
     }
     private fun connectSocket() {
-        viewModelScope.launch(Dispatchers.IO) {
-            socket.connect()
-        }
+        socket.connect()
     }
 
     private fun disconnectSocket() {
-        viewModelScope.launch(Dispatchers.IO) {
-            socket.disconnect()
-        }
+        socket.disconnect()
     }
 
     private fun initToken() {

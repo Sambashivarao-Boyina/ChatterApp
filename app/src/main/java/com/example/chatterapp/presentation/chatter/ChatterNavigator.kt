@@ -1,6 +1,9 @@
 package com.example.chatterapp.presentation.chatter
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
+import android.os.Build
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -23,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.fragment.app.FragmentActivity
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.chatterapp.MainActivity
@@ -33,13 +37,6 @@ import com.example.chatterapp.presentation.chatter.components.TopBar
 import com.example.chatterapp.presentation.navGraph.Route
 import com.example.chatterapp.presentation.navGraph.chatter.ChatterGraph
 import com.example.chatterapp.ui.theme.Black
-import com.example.chatterapp.ui.theme.Blue
-import com.example.chatterapp.util.Constants.ZEGO_APP_ID
-import com.example.chatterapp.util.Constants.ZEGO_APP_SIGN
-import com.google.firebase.messaging.FirebaseMessaging
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
-
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -53,7 +50,7 @@ fun ChatterNavigator(
             chatterNavigatorViewModel.onCleared()
         }
     }
-    val context = LocalContext.current as MainActivity
+
 
     val navController = rememberNavController()
     val backStackState = navController.currentBackStackEntryAsState().value
@@ -63,6 +60,7 @@ fun ChatterNavigator(
                 backStackState?.destination?.route == Route.SearchFriend.route ||
                 backStackState?.destination?.route == Route.UserProfile.route
     }
+
 
 
 
@@ -96,3 +94,4 @@ fun ChatterNavigator(
     }
 
 }
+
