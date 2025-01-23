@@ -13,8 +13,11 @@ object Constants {
     const val FRIEND_ID = "chat_id"
     const val IMAGE_URL = "image_url"
 
-    const val BASE_URL = "http://10.0.2.2:3000/api/"
-    const val SOCKET_URL = "http://10.0.2.2:3000"
+//    const val BASE_URL = "http://10.0.2.2:3000/api/"
+//    const val SOCKET_URL = "http://10.0.2.2:3000"
+
+    const val BASE_URL = "https://chatapp-backend-dikw.onrender.com/api/"
+    const val SOCKET_URL = "https://chatapp-backend-dikw.onrender.com"
 
     const val ZEGO_APP_ID = 101827765L
     const val ZEGO_APP_SIGN = "9cb9bbaa72546bebd207319160cc429b14128fab8d27d6d2dc1beeb3285d8459"

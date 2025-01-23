@@ -24,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.min
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHost
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
@@ -75,11 +76,11 @@ fun MessageBox(
                     fontWeight = FontWeight.SemiBold
                 )
             }
-
-            Text(
-                text = parseDate(message.createdAt),
-                style = MaterialTheme.typography.labelSmall
-            )
+//
+//            Text(
+//                text = parseDate(message.createdAt),
+//                fontSize = 10.sp
+//            )
         }
     }
 }

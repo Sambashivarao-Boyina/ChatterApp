@@ -184,7 +184,7 @@ fun UserProfileScreen(
                                         painter = painterResource(R.drawable.default_profile),
                                         contentDescription = null,
                                         modifier = Modifier
-                                            .fillMaxWidth(0.5f)
+                                            .size(200.dp)
                                             .clip(CircleShape),
                                         contentScale = ContentScale.Crop
                                     )
@@ -255,7 +255,7 @@ fun UserProfileScreen(
                                         )
                                         Text(
                                             text = userDetails.username,
-                                            style = MaterialTheme.typography.displaySmall,
+                                            style = MaterialTheme.typography.headlineMedium,
                                             color = Blue,
                                             fontWeight = FontWeight.Bold
                                         )
@@ -377,7 +377,7 @@ fun UserProfileScreen(
                                 ) {
                                     Text(
                                         text = "Change Password",
-                                        style = MaterialTheme.typography.titleLarge,
+                                        style = MaterialTheme.typography.titleMedium,
                                         fontWeight = FontWeight.Bold,
                                     )
 

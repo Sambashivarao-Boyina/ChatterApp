@@ -30,7 +30,7 @@ fun TopBar(
         },
         title = {
             Text(text = title,
-                style = MaterialTheme.typography.displaySmall,
+                style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold)
         },
         colors = TopAppBarDefaults.topAppBarColors(
