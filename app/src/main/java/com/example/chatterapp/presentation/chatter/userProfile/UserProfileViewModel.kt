@@ -74,8 +74,7 @@ class UserProfileViewModel @Inject constructor(
 
             is UserProfileEvent.LogOutUser -> {
                 viewModelScope.launch {
-                    localUserManager.logOutUser()
-                    sideEffect = "User Logged Out"
+                    logoutUser()
                 }
             }
 
@@ -145,6 +144,21 @@ class UserProfileViewModel @Inject constructor(
         }
     }
 
+    private suspend fun logoutUser() {
+        try {
+            val response = chatterRepository.deleteFcmToken()
+
+            if(response.isSuccessful) {
+                localUserManager.logOutUser()
+                sideEffect = "User Logged Out"
+            } else {
+                sideEffect = extractData(response.errorBody(),"message")
+            }
+        }catch (e:Exception) {
+            sideEffect = e.localizedMessage
+        }
+    }
+
     private suspend fun sendUserName() {
         if(_updateUserName.value.trim().isNotEmpty() && _updateUserName.value.length >= 6) {
             try {
@@ -156,7 +170,6 @@ class UserProfileViewModel @Inject constructor(
 
                 if(response.isSuccessful) {
                     sideEffect = extractData(response.body(),"message")
-
                     getUserDetails()
                 } else {
                     sideEffect = extractData(response.errorBody(),"message")

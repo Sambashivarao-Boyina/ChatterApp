@@ -25,6 +25,8 @@ interface ChatterRepository {
 
     suspend fun saveFcmToken(data: UpdateData): Response<ResponseBody>
 
+    suspend fun deleteFcmToken(): Response<ResponseBody>
+
     //getting the friends list
     suspend fun getFriendsList(): Response<List<Friend>>
 

@@ -40,6 +40,10 @@ class ChatterRepositoryImpl(
         return chatterApi.saveFcmToken(data)
     }
 
+    override suspend fun deleteFcmToken(): Response<ResponseBody> {
+        return chatterApi.deleteFcmToken()
+    }
+
     override suspend fun getFriendsList(): Response<List<Friend>> {
         return chatterApi.getFriendList()
     }

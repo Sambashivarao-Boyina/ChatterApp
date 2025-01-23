@@ -49,29 +49,34 @@ class MainViewModel @Inject constructor(
                             if(token != null) {
                                 localUserManager.saveUserToken(token)
                                 startDestination = Route.ChatApp.route
+                                delay(300)
                                 splashCondition = false
                             } else {
                                 startDestination = Route.AuthRoutes.route
+                                delay(300)
                                 splashCondition = false
                             }
                         } else {
                             localUserManager.logOutUser()
                             startDestination = Route.AuthRoutes.route
+                            delay(300)
                             splashCondition = false
                         }
                     }catch (e: Exception) {
                         startDestination = Route.AuthRoutes.route
+                        delay(300)
                         splashCondition = false
                     }
                 }
             }else if(!onBoarding) {
                 startDestination = Route.AppStartScreen.route
+                delay(300)
                 splashCondition = false
             } else{
                 startDestination = Route.AuthRoutes.route
+                delay(300)
                 splashCondition = false
             }
-//            delay(1000)
 
         }.launchIn(viewModelScope)
 

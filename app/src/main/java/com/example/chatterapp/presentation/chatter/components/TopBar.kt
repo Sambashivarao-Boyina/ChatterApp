@@ -30,7 +30,7 @@ fun TopBar(
         },
         title = {
             Text(text = title,
-                style = MaterialTheme.typography.titleLarge,
+                style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold)
         },
         colors = TopAppBarDefaults.topAppBarColors(
@@ -39,7 +39,7 @@ fun TopBar(
             navigationIconContentColor = Gray
         ),
         modifier = Modifier.height(100.dp)
-            .padding(bottom = 10.dp),
+            .padding(top = 10.dp),
         actions = {
             actions()
         }

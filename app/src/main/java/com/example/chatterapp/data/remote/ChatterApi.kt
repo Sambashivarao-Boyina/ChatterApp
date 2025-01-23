@@ -47,6 +47,9 @@ interface ChatterApi {
         @Body data: UpdateData
     ): Response<ResponseBody>
 
+    @PATCH("user/deleteFcmToken")
+    suspend fun deleteFcmToken():Response<ResponseBody>
+
 
     @GET("user")
     suspend fun getAllUser(): Response<List<User>>

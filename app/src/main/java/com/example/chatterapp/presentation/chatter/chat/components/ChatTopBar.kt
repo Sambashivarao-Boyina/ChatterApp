@@ -108,7 +108,7 @@ fun ChatTopBar(
                 ) {
                     Text(
                         text = friend.person.username,
-                        style = MaterialTheme.typography.headlineLarge,
+                        style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Bold
                     )
                     if (isOnline) {
