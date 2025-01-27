@@ -101,7 +101,8 @@ fun FriendCard(
         if(isOnline) {
             Text(
                 text = "online",
-                color = Blue
+                color = Blue,
+                modifier = Modifier.width(150.dp)
             )
         }
 
