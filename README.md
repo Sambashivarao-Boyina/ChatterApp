@@ -8,7 +8,7 @@
   - Email-based login and signup.
   - Google Authentication for quick access.
 - **Friend Requests:**
-  - Search for users by name or email.
+  - Search for users by name.
   - Send, accept, or reject friend requests.
 - **Messaging:**
   - Start real-time chat with friends after they accept your request.
